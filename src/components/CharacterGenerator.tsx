@@ -261,7 +261,7 @@ export function CharacterGenerator() {
 
     return (
       <div className="flex items-center gap-3 mb-4">
-        <span className="w-24 text-sm font-bold text-[#8B0000]">{label}</span>
+        <span className="w-24 text-sm font-bold text-[#8B4513]">{label}</span>
         
         {/* Bolinhas representando pontos */}
         <div className="flex items-center gap-1">
@@ -272,8 +272,8 @@ export function CharacterGenerator() {
               className={`w-5 h-5 rounded-full border-2 transition-all ${
                 i < points
                   ? color
-                  : 'bg-transparent border-[#8B0000]/30'
-              } ${i < points ? 'border-[#8B0000]' : 'hover:border-[#8B0000]/50'}`}
+                  : 'bg-transparent border-[#8B4513]/30'
+              } ${i < points ? 'border-[#8B4513]' : 'hover:border-[#8B4513]/50'}`}
             />
           ))}
         </div>
@@ -291,37 +291,37 @@ export function CharacterGenerator() {
               stats: { ...editForm.stats, [statKey]: val },
             });
           }}
-          className="w-12 bg-[#1a1a1a] border border-[#8B0000]/50 rounded px-2 py-1 text-center text-white text-sm"
+          className="w-12 bg-[#0d0805] border border-[#8B4513]/50 rounded px-2 py-1 text-center text-white text-sm"
         />
 
         {/* Botão rolar */}
         <button
           onClick={rollStat}
-          className="px-3 py-1 bg-[#8B0000] text-white rounded text-sm font-bold hover:bg-[#a00000] transition-colors"
+          className="px-3 py-1 bg-[#8B4513] text-white rounded text-sm font-bold hover:bg-[#9B5523] transition-colors"
         >
           ◆ Rolar
         </button>
 
         {/* Modificador */}
         <div className="flex items-center gap-1">
-          <span className="text-[#8B0000] text-xs">Mod:</span>
+          <span className="text-[#8B4513] text-xs">Mod:</span>
           <input
             type="number"
             value={modifier}
             onChange={(e) => {
               setModifiers({ ...modifiers, [statKey]: parseInt(e.target.value) || 0 });
             }}
-            className="w-12 bg-[#1a1a1a] border border-[#8B0000]/50 rounded px-2 py-1 text-center text-white text-sm"
+            className="w-12 bg-[#0d0805] border border-[#8B4513]/50 rounded px-2 py-1 text-center text-white text-sm"
           />
         </div>
 
         {/* Resultado da rolagem */}
         {result && (
           <div className="flex flex-col items-center min-w-[100px]">
-            <span className="text-[#8B0000] text-xs font-bold">
+            <span className="text-[#8B4513] text-xs font-bold">
               {result.rolls.join(", ")} {modifier !== 0 && (modifier > 0 ? `+ ${modifier}` : `- ${Math.abs(modifier)}`)}
             </span>
-            <span className="text-[#8B0000] font-bold text-sm">
+            <span className="text-[#8B4513] font-bold text-sm">
               Resultado: {result.total}
             </span>
           </div>
@@ -332,12 +332,12 @@ export function CharacterGenerator() {
 
   return (
     <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="medieval-title text-4xl md:text-5xl text-white glow-red mb-2">
+      <div className="text-center mb-8">
+        <h2 className="medieval-title text-4xl md:text-5xl text-white glow-red mb-3">
           ⚔ Personagens
         </h2>
-        <p className="text-[#F5DEB3]/60 italic font-serif">
-          Crie ou edite seu personagem...
+        <p className="text-[#D4A574]/50 italic font-serif text-lg">
+          Forje heróis para enfrentar o sertão
         </p>
       </div>
 
@@ -350,7 +350,7 @@ export function CharacterGenerator() {
         </button>
         <button
           onClick={generateRandomCharacter}
-          className="px-6 py-3 bg-[#8B0000] text-white rounded-xl font-bold hover:bg-[#a00000] border-2 border-[#8B0000]"
+          className="px-6 py-3 bg-[#8B4513]/80 text-[#FFD700] rounded-xl font-bold hover:bg-[#8B4513] border border-[#8B4513]/50 hover:border-[#FFD700]/30 transition-all font-serif"
         >
           ◆ Gerar Aleatório
         </button>
@@ -359,9 +359,9 @@ export function CharacterGenerator() {
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-1">
           <div className="nordestino-card rounded-2xl p-6">
-              <h3 className="medieval-title text-xl text-[#8B0000] mb-4">Personagens Salvos</h3>
+              <h3 className="medieval-title text-xl text-[#FFD700]/80 mb-4">Personagens Salvos</h3>
             {savedCharacters.length === 0 ? (
-              <p className="text-[#8B0000] italic text-center py-8">Nenhum personagem criado ainda</p>
+              <p className="text-[#D4A574]/40 italic text-center py-8">Nenhum personagem criado ainda</p>
             ) : (
               <div className="space-y-3 max-h-[500px] overflow-y-auto scroll-parchment pr-2">
                 {savedCharacters.map((char) => (
@@ -369,7 +369,7 @@ export function CharacterGenerator() {
                     key={char.id}
                     onClick={() => editCharacter(char)}
                     className={`stat-box rounded-xl p-4 cursor-pointer transition-all ${
-                      selectedCharacter?.id === char.id ? "border-[#FF4444]" : "border-[#8B0000]/30"
+                      selectedCharacter?.id === char.id ? "border-[#D4A574]" : "border-[#8B4513]/30"
                     }`}
                   >
                     <div className="flex gap-3">
@@ -377,7 +377,7 @@ export function CharacterGenerator() {
                         <img
                           src={char.images[0]}
                           alt={char.name}
-                          className="w-12 h-12 rounded-lg object-cover border border-[#8B0000] cursor-zoom-in"
+                          className="w-12 h-12 rounded-lg object-cover border border-[#8B4513] cursor-zoom-in"
                           onClick={(e) => {
                             e.stopPropagation();
                             setEnlargedImage(char.images[0]);
@@ -391,11 +391,11 @@ export function CharacterGenerator() {
                         <div className="flex justify-between items-start">
                           <div>
                             <h4 className="font-bold text-white">{char.name}</h4>
-                            <p className="text-[#8B0000] text-sm font-bold">{char.characterClass}</p>
+                            <p className="text-[#8B4513] text-sm font-bold">{char.characterClass}</p>
                           </div>
                           <button
                             onClick={(e) => { e.stopPropagation(); deleteCharacter(char.id); }}
-                            className="text-red-500 hover:text-red-400"
+                            className="text-[#D4A574] hover:text-[#CD853F]"
                           >
                             ✕
                           </button>
@@ -417,12 +417,12 @@ export function CharacterGenerator() {
           {isEditing ? (
             <div className="nordestino-card rounded-2xl p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="medieval-title text-2xl text-[#8B0000]">
+                <h3 className="medieval-title text-2xl text-[#8B4513]">
                   {selectedCharacter ? "Editando Personagem" : "Novo Personagem"}
                 </h3>
                 <button
                   onClick={saveCharacter}
-                  className="px-6 py-2 bg-red-800 text-white rounded-lg font-bold hover:bg-red-700"
+                  className="px-6 py-2 bg-[#8B4513] text-[#FFD700] rounded-lg font-bold hover:bg-[#9B5523] transition-colors"
                 >
                   ⊕ Salvar
                 </button>
@@ -430,7 +430,7 @@ export function CharacterGenerator() {
 
               <div className="flex gap-4 mb-6">
                 <div className="flex-1">
-                  <label className="block text-[#8B0000] font-bold mb-2">Nome</label>
+                  <label className="block text-[#8B4513] font-bold mb-2">Nome</label>
                   <input
                     type="text"
                     value={editForm.name}
@@ -440,11 +440,11 @@ export function CharacterGenerator() {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-[#8B0000] font-bold mb-2">Classe</label>
+                  <label className="block text-[#8B4513] font-bold mb-2">Classe</label>
                   <select
                     value={editForm.characterClass}
                     onChange={(e) => setEditForm({ ...editForm, characterClass: e.target.value })}
-                    className="w-full input-medieval rounded-lg px-4 py-2 text-[#8B0000] font-bold"
+                    className="w-full input-medieval rounded-lg px-4 py-2 text-[#8B4513] font-bold"
                   >
                     {classes.map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -454,7 +454,7 @@ export function CharacterGenerator() {
               </div>
 
               <div>
-                <label className="block text-[#8B0000] font-bold mb-2">Altura</label>
+                <label className="block text-[#8B4513] font-bold mb-2">Altura</label>
                 <input
                   type="text"
                   value={editForm.height}
@@ -464,7 +464,7 @@ export function CharacterGenerator() {
                 />
               </div>
               <div>
-                <label className="block text-[#8B0000] font-bold mb-2">Idade</label>
+                <label className="block text-[#8B4513] font-bold mb-2">Idade</label>
                 <input
                   type="text"
                   value={editForm.age}
@@ -475,7 +475,7 @@ export function CharacterGenerator() {
               </div>
 
               <div className="mb-6">
-                <label className="block text-[#8B0000] font-bold mb-2">Imagens do Personagem</label>
+                <label className="block text-[#8B4513] font-bold mb-2">Imagens do Personagem</label>
                 <div className="flex gap-2 mb-2">
                   <input
                     type="text"
@@ -501,7 +501,7 @@ export function CharacterGenerator() {
                         input.value = '';
                       }
                     }}
-                    className="px-4 py-2 bg-[#8B0000] text-white rounded-lg font-bold hover:bg-[#a00000]"
+                    className="px-4 py-2 bg-[#8B4513] text-white rounded-lg font-bold hover:bg-[#9B5523]"
                   >
                     +
                   </button>
@@ -514,7 +514,7 @@ export function CharacterGenerator() {
                         <img
                           src={img}
                           alt={`Imagem ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border-2 border-[#8B0000] cursor-zoom-in"
+                          className="w-full h-24 object-cover rounded-lg border-2 border-[#8B4513] cursor-zoom-in"
                           onClick={() => setEnlargedImage(img)}
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display = 'none';
@@ -526,7 +526,7 @@ export function CharacterGenerator() {
                             const newImages = editForm.images.filter((_, i) => i !== index);
                             setEditForm({ ...editForm, images: newImages });
                           }}
-                          className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute -top-2 -right-2 bg-[#8B4513] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           ✕
                         </button>
@@ -537,7 +537,7 @@ export function CharacterGenerator() {
               </div>
 
               <div className="mb-6">
-                <label className="block text-[#8B0000] font-bold mb-2">Descrição</label>
+                <label className="block text-[#8B4513] font-bold mb-2">Descrição</label>
                 <textarea
                   value={editForm.description}
                   onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
@@ -549,11 +549,11 @@ export function CharacterGenerator() {
 
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-[#8B0000] font-bold mb-2">Pontos de Vida</label>
+                  <label className="block text-[#8B4513] font-bold mb-2">Pontos de Vida</label>
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 h-6 bg-[#1a1a1a] rounded-full overflow-hidden border border-red-900">
+                    <div className="flex-1 h-6 bg-[#0d0805] rounded-full overflow-hidden border border-[#8B4513]/40">
                       <div
-                        className="h-full bg-gradient-to-r from-red-800 to-red-600 transition-all"
+                        className="h-full bg-gradient-to-r from-[#8B4513] to-[#CD853F] transition-all"
                         style={{ width: `${(editForm.hp / editForm.maxHp) * 100}%` }}
                       />
                     </div>
@@ -562,7 +562,7 @@ export function CharacterGenerator() {
                       min="1"
                       value={editForm.hp}
                       onChange={(e) => setEditForm({ ...editForm, hp: Math.max(0, parseInt(e.target.value) || 0) })}
-                      className="w-16 bg-[#1a1a1a] border border-red-900 rounded px-2 py-1 text-center text-white"
+                      className="w-16 bg-[#0d0805] border border-[#8B4513]/40 rounded px-2 py-1 text-center text-white"
                     />
                     <span className="text-[#F5DEB3]">/</span>
                     <input
@@ -570,14 +570,14 @@ export function CharacterGenerator() {
                       min="1"
                       value={editForm.maxHp}
                       onChange={(e) => setEditForm({ ...editForm, maxHp: Math.max(1, parseInt(e.target.value) || 1) })}
-                      className="w-16 bg-[#1a1a1a] border border-red-900 rounded px-2 py-1 text-center text-white"
+                      className="w-16 bg-[#0d0805] border border-[#8B4513]/40 rounded px-2 py-1 text-center text-white"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[#8B0000] font-bold mb-2">DT</label>
+                  <label className="block text-[#8B4513] font-bold mb-2">DT</label>
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 h-6 bg-[#1a1a1a] rounded-full overflow-hidden border border-purple-600">
+                    <div className="flex-1 h-6 bg-[#0d0805] rounded-full overflow-hidden border border-purple-600">
                       <div
                         className="h-full bg-gradient-to-r from-purple-700 to-purple-400 transition-all"
                         style={{ width: `${(editForm.mana / editForm.maxMana) * 100}%` }}
@@ -588,7 +588,7 @@ export function CharacterGenerator() {
                       min="1"
                       value={editForm.mana}
                       onChange={(e) => setEditForm({ ...editForm, mana: Math.max(0, parseInt(e.target.value) || 0) })}
-                      className="w-16 bg-[#1a1a1a] border border-purple-900 rounded px-2 py-1 text-center text-white"
+                      className="w-16 bg-[#0d0805] border border-purple-900 rounded px-2 py-1 text-center text-white"
                     />
                     <span className="text-[#F5DEB3]">/</span>
                     <input
@@ -596,27 +596,27 @@ export function CharacterGenerator() {
                       min="1"
                       value={editForm.maxMana}
                       onChange={(e) => setEditForm({ ...editForm, maxMana: Math.max(1, parseInt(e.target.value) || 1) })}
-                      className="w-16 bg-[#1a1a1a] border border-purple-900 rounded px-2 py-1 text-center text-white"
+                      className="w-16 bg-[#0d0805] border border-purple-900 rounded px-2 py-1 text-center text-white"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h4 className="medieval-title text-lg text-[#8B0000]">✦ Atributos</h4>
-                <StatBar label="Força" color="bg-red-700" statKey="strength" />
-                <StatBar label="Intelecto" color="bg-red-900" statKey="intellect" />
-                <StatBar label="Resistência" color="bg-red-700" statKey="endurance" />
-                <StatBar label="Agilidade" color="bg-red-900" statKey="agility" />
-                <StatBar label="Sanidade" color="bg-red-700" statKey="sanity" />
-                <StatBar label="Mana" color="bg-red-900" statKey="manaStat" />
+                <h4 className="medieval-title text-lg text-[#8B4513]">✦ Atributos</h4>
+                <StatBar label="Força" color="bg-amber-800" statKey="strength" />
+                <StatBar label="Intelecto" color="bg-[#5C3317]" statKey="intellect" />
+                <StatBar label="Resistência" color="bg-amber-800" statKey="endurance" />
+                <StatBar label="Agilidade" color="bg-[#5C3317]" statKey="agility" />
+                <StatBar label="Sanidade" color="bg-amber-800" statKey="sanity" />
+                <StatBar label="Mana" color="bg-[#5C3317]" statKey="manaStat" />
               </div>
             </div>
           ) : (
             <div className="nordestino-card rounded-2xl p-12 flex items-center justify-center min-h-[400px]">
               <div className="text-center text-[#F5DEB3]/50">
-                <p className="text-6xl mb-4 text-[#8B0000]">⚔</p>
-                <p className="text-xl font-serif text-[#8B0000]">Selecione um personagem ou crie um novo</p>
+                <p className="text-6xl mb-4 text-[#8B4513]">⚔</p>
+                <p className="text-xl font-serif text-[#8B4513]">Selecione um personagem ou crie um novo</p>
               </div>
             </div>
           )}
@@ -634,12 +634,12 @@ export function CharacterGenerator() {
             <img
               src={enlargedImage}
               alt="Imagem ampliada"
-              className="max-w-full max-h-[95vh] rounded-lg border-4 border-[#8B0000] shadow-2xl"
+              className="max-w-full max-h-[95vh] rounded-lg border-4 border-[#8B4513] shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
             <button
               onClick={() => setEnlargedImage(null)}
-              className="absolute -top-4 -right-4 bg-[#8B0000] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold hover:bg-red-700 transition-colors"
+              className="absolute -top-4 -right-4 bg-[#8B4513] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold hover:bg-amber-800 transition-colors"
             >
               ✕
             </button>

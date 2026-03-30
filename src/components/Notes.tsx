@@ -117,7 +117,7 @@ export function Notes() {
       <div className="nordestino-card rounded-2xl p-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-          <h3 className="medieval-title text-2xl text-[#8B0000]">
+          <h3 className="medieval-title text-2xl text-[#8B4513]">
             Páginas do Diário
           </h3>
           <button
@@ -154,11 +154,11 @@ export function Notes() {
         <div className="grid md:grid-cols-3 gap-8">
           {/* Lista de notas */}
           <div className="md:col-span-1 space-y-4">
-            <h4 className="medieval-title text-xl text-[#8B0000]">Suas Páginas</h4>
+            <h4 className="medieval-title text-xl text-[#8B4513]">Suas Páginas</h4>
             {filteredNotes.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-6xl mb-4 text-[#8B0000]">✎</p>
-                <p className="text-[#8B0000]/60 italic font-serif">
+                <p className="text-6xl mb-4 text-[#8B4513]">✎</p>
+                <p className="text-[#8B4513]/60 italic font-serif">
                   Nenhuma página écritta
                 </p>
               </div>
@@ -175,7 +175,7 @@ export function Notes() {
                       <span className="text-2xl">{categories.find((c) => c.id === note.category)?.icon}</span>
                       <button
                         onClick={(e) => { e.stopPropagation(); deleteNote(note.id); }}
-                        className="text-red-400 hover:text-red-300 text-lg font-bold"
+                        className="text-[#CD853F] hover:text-[#D4A574] text-lg font-bold"
                       >
                         ✕
                       </button>
@@ -194,13 +194,13 @@ export function Notes() {
           {/* Editor */}
           <div className="md:col-span-2">
             {isEditing && selectedNote ? (
-              <div className="bg-[#F5DEB3]/50 rounded-xl p-8 border-2 border-[#8B0000]/30 space-y-6">
+              <div className="bg-[#1a0f08]/80 rounded-xl p-8 border border-[#8B4513]/25 space-y-6">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                  <h4 className="medieval-title text-2xl text-[#8B0000]">Editando Página</h4>
+                  <h4 className="medieval-title text-2xl text-[#8B4513]">Editando Página</h4>
                   <div className="flex gap-3">
                     <button
                       onClick={saveNote}
-                      className="px-6 py-3 bg-red-800 text-[#F5DEB3] rounded-xl font-bold hover:bg-red-700"
+                      className="px-6 py-3 bg-[#8B4513] text-[#FFD700] rounded-xl font-bold hover:bg-[#9B5523] transition-colors"
                     >
                       ⊕ Salvar
                     </button>
@@ -214,7 +214,7 @@ export function Notes() {
                 </div>
 
                 <div>
-                  <label className="block text-[#8B0000] mb-2 font-bold">Título</label>
+                  <label className="block text-[#8B4513] mb-2 font-bold">Título</label>
                   <input
                     type="text"
                     value={editTitle}
@@ -225,7 +225,7 @@ export function Notes() {
                 </div>
 
                 <div>
-                  <label className="block text-[#8B0000] mb-2 font-bold">Categoria</label>
+                  <label className="block text-[#8B4513] mb-2 font-bold">Categoria</label>
                   <select
                     value={editCategory}
                     onChange={(e) => setEditCategory(e.target.value as Note["category"])}
@@ -238,7 +238,7 @@ export function Notes() {
                 </div>
 
                 <div>
-                  <label className="block text-[#8B0000] mb-2 font-bold">Imagens</label>
+                  <label className="block text-[#8B4513] mb-2 font-bold">Imagens</label>
                   <div className="flex gap-2 mb-2">
                     <input
                       type="text"
@@ -264,7 +264,7 @@ export function Notes() {
                           input.value = '';
                         }
                       }}
-                      className="px-4 py-2 bg-[#8B0000] text-white rounded-lg font-bold hover:bg-[#a00000]"
+                      className="px-4 py-2 bg-[#8B4513] text-white rounded-lg font-bold hover:bg-[#9B5523]"
                     >
                       +
                     </button>
@@ -277,7 +277,7 @@ export function Notes() {
                           <img
                             src={img}
                             alt={`Imagem ${index + 1}`}
-                            className="w-full h-20 object-cover rounded-lg border-2 border-[#8B0000] cursor-zoom-in"
+                            className="w-full h-20 object-cover rounded-lg border-2 border-[#8B4513] cursor-zoom-in"
                             onClick={() => setEnlargedImage(img)}
                             onError={(e) => {
                               (e.target as HTMLImageElement).style.display = 'none';
@@ -289,7 +289,7 @@ export function Notes() {
                               const newImages = editImages.filter((_, i) => i !== index);
                               setEditImages(newImages);
                             }}
-                            className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute -top-2 -right-2 bg-[#8B4513] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             ✕
                           </button>
@@ -300,7 +300,7 @@ export function Notes() {
                 </div>
 
                 <div>
-                  <label className="block text-[#8B0000] mb-2 font-bold">Conteúdo</label>
+                  <label className="block text-[#8B4513] mb-2 font-bold">Conteúdo</label>
                   <textarea
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
@@ -313,7 +313,7 @@ export function Notes() {
             ) : (
               <div className="stat-box rounded-xl p-12 flex items-center justify-center h-[500px]">
                 <div className="text-center text-[#D4A574]">
-                  <p className="text-8xl mb-6 text-[#8B0000]">✎</p>
+                  <p className="text-8xl mb-6 text-[#8B4513]">✎</p>
                   <p className="text-xl font-serif">Selecione uma página</p>
                   <p className="text-[#D4A574]/50 mt-2 italic font-serif">ou escreva uma nova história</p>
                 </div>
@@ -333,12 +333,12 @@ export function Notes() {
             <img
               src={enlargedImage}
               alt="Imagem ampliada"
-              className="max-w-full max-h-[95vh] rounded-lg border-4 border-[#8B0000] shadow-2xl"
+              className="max-w-full max-h-[95vh] rounded-lg border-4 border-[#8B4513] shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
             <button
               onClick={() => setEnlargedImage(null)}
-              className="absolute -top-4 -right-4 bg-[#8B0000] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold hover:bg-red-700 transition-colors"
+              className="absolute -top-4 -right-4 bg-[#8B4513] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold hover:bg-amber-800 transition-colors"
             >
               ✕
             </button>
