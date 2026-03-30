@@ -1,31 +1,29 @@
 # ⚔️ RPG Table Manager
 
-Sua mesa de RPG digital - Ferramentas épicas para aventuras épicas!
+Uma mesa de RPG digital para aventuras épicas com tema Nordestino brasileiro!
 
 ## Funcionalidades
 
-### 🎲 Rolador de Dados
-- Role dados de todos os tipos (d4, d6, d8, d10, d12, d20, d100)
-- Adicione modificadores e role múltiplos dados
-- Histórico de rolagens com estatísticas
-- Efeitos visuais de animação
+### 🎲 Rolador de Dados 3D
+- Dados 3D com física realista usando BabylonJS e Ammo.js
+- Todos os tipos de dados: d4, d6, d8, d10, d12, d20, d100
+- Múltiplos dados por rolagem com modificadores
+- Histórico completo com estatísticas (maior, menor, média)
+- Tema Nordestino: vermelho escuro (#8B0000) e dourado (#FFD700)
 
 ### ⚔️ Gerador de Personagens
-- Gere personagens aleatórios completos
-- Raças: Humano, Elfo, Anão, Halfling, Draconato, Gnomo, Meio-elfo, Meio-orc, Tiefling
-- Classes: Guerreiro, Mago, Ladino, Clérigo, Bárbaro, Bardo, Druida, Feiticeiro, Monge, Paladino, Patrulheiro
-- Atributos calculados com bônus raciais
-- Pontos de vida e classe de armadura
+- Classes temáticas: Cangaceiro, Retirante, Soldado da Volante, Bendezeiro, Ex-Escravo, Padre, Descrente
+- Atributos calculados com bônus
+- Barras dePV e DT (mana) com visual estilizado
 
 ### 📜 Gerador de Nomes
-- Nomes para diferentes raças de RPG
-- Categorias: Fantasia Medieval, Élfico, Anão, Orc/Goblin, Humano, Tiefling
-- Copie nomes com um clique
+- Nomes temáticos para diferentes raças
+- Copy-to-clipboard comum clique
 
 ### 📝 Bloco de Notas
-- Salve suas aventuras e anotações
-- Categorize por tipo: Sessão, Personagem, Missão, NPC, Local
-- Persistência automática no navegador
+- Organize suas aventuras
+- Categorização automática
+- Persistência local no navegador
 
 ## Como Executar
 
@@ -36,14 +34,15 @@ bun install
 
 ### Iniciar servidor de desenvolvimento
 ```bash
-bun dev
+bun run src/index.ts
 ```
 
-Acesse: http://localhost:3001
+Acesse: http://localhost:3000
 
 ### Para produção
 ```bash
-bun start
+bun run build
+bun run start
 ```
 
 ## Tecnologias
@@ -52,37 +51,39 @@ bun start
 - **React** - Interface do usuário
 - **Tailwind CSS** - Estilização moderna
 - **TypeScript** - Tipagem estática
+- **@3d-dice/dice-box** - Dados 3D com física (BabylonJS + Ammo.js)
 
 ## Estrutura do Projeto
 
 ```
 src/
-├── App.tsx              # Componente principal com navegação
-├── index.ts             # Servidor Bun
-├── index.html           # Página HTML
-├── index.css            # Estilos CSS com Tailwind
-├── frontend.tsx         # Entry point do React
+├── App.tsx                    # Componente principal
+├── index.ts                   # Servidor Bun
+├── index.html                 # Página HTML
+├── index.css                  # Estilos Tailwind
+├── frontend.tsx                # Entry point React
 └── components/
-    ├── DiceRoller.tsx      # Rolador de dados
-    ├── CharacterGenerator.tsx  # Gerador de personagens
-    ├── NameGenerator.tsx   # Gerador de nomes
-    └── Notes.tsx          # Bloco de notas
+    ├── ThreeDice.tsx          # Componente 3D DiceBox
+    ├── DiceRoller.tsx         # Rolador de dados
+    ├── CharacterGenerator.tsx # Gerador de personagens
+    ├── NameGenerator.tsx      # Gerador de nomes
+    └── Notes.tsx              # Bloco de notas
+
+public/assets/
+├── ammo/ammo.wasm.wasm        # Physics engine
+└── themes/default/            # Dice textures
 ```
 
-## Screenshots
+## Créditos
 
-O site possui:
-- Header com gradiente roxo/rosa
-- Navegação por abas com ícones
-- Cards com efeito glassmorphism
-- Animações suaves
-- Design responsivo para mobile e desktop
+- **@3d-dice/dice-box** - [GitHub](https://github.com/3d-dice/dice-box)
+- **BabylonJS** - 3D engine
+- **Ammo.js** - Physics simulation
 
-## Dicas de Uso
+## Licença
 
-1. **Dados**: Clique nos botões de dados para rolar. Use quantidade e modificadores para rolar múltiplos dados.
-2. **Personagem**: Clique em "Gerar Personagem" para criar um novo. Use "Salvar" para guardar seus favoritos.
-3. **Nomes**: Selecione uma raça e clique em "Gerar Nomes". Clique em um nome para copiar.
-4. **Notas**: Suas notas são salvas automaticamente no navegador.
+MIT License - Copyright (c) 2026 Êndrell Jeronimo
 
-## Feito com ⚔️ para jogadores de RPG
+---
+
+Feito com ⚔️ para jogadores de RPG
