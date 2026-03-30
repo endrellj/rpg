@@ -1,0 +1,651 @@
+import { useState, useEffect } from "react";
+
+interface Character {
+  id: string;
+  name: string;
+  race: string;
+  characterClass: string;
+  height: string;
+  age: string;
+  description: string;
+  images: string[];
+  hp: number;
+  maxHp: number;
+  mana: number;
+  maxMana: number;
+  stats: {
+    strength: number;
+    intellect: number;
+    endurance: number;
+    agility: number;
+    sanity: number;
+    manaStat: number;
+  };
+  createdAt: Date;
+}
+
+export function CharacterGenerator() {
+  const [savedCharacters, setSavedCharacters] = useState<Character[]>([]);
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [rollResults, setRollResults] = useState<{ [key: string]: { rolls: number[]; total: number; modifier: number } | null }>({});
+  const [modifiers, setModifiers] = useState<{ [key: string]: number }>({
+    strength: 0,
+    intellect: 0,
+    endurance: 0,
+    agility: 0,
+    sanity: 0,
+    manaStat: 0,
+  });
+
+  const [editForm, setEditForm] = useState({
+    name: "",
+    race: "Humano",
+    characterClass: "Cangaceiro",
+    height: "",
+    age: "",
+    description: "",
+    images: [] as string[],
+    hp: 10,
+    maxHp: 10,
+    mana: 10,
+    maxMana: 10,
+    stats: {
+      strength: 10,
+      intellect: 10,
+      endurance: 10,
+      agility: 10,
+      sanity: 10,
+      manaStat: 10,
+    },
+  });
+
+  useEffect(() => {
+    const saved = localStorage.getItem("rpg-characters");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setSavedCharacters(parsed.map((c: any) => ({
+          ...c,
+          createdAt: new Date(c.createdAt),
+        })));
+      } catch (e) {
+        console.error("Erro ao carregar personagens:", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("rpg-characters", JSON.stringify(savedCharacters));
+  }, [savedCharacters]);
+
+  const classes = [
+    "Cangaceiro",
+    "Retirante",
+    "Soldado da Volante",
+    "Bendezeiro",
+    "Ex-Escravo",
+    "Padre",
+    "Descrente",
+  ];
+
+  const generateRandomCharacter = () => {
+    const maleNames = ["Antonio", "Francisco", "Jose", "Joao", "Pedro", "Paulo", "Carlos", "Luis", "Marcos", "Gabriel", "Miguel", "Rafael", "Severino", "Jeronimo"];
+    const femaleNames = ["Maria", "Ana", "Francisca", "Antonia", "Adriana", "Juliana", "Marcia", "Fernanda", "Patricia", "Carla", "Rosalia", "Luzia", "Beatriz", "Isabel"];
+
+    const heights = ["1,55m", "1,60m", "1,65m", "1,70m", "1,75m", "1,80m", "1,85m"];
+    const ages = ["18", "20", "22", "25", "28", "30", "32", "35", "40", "45", "50"];
+
+    const isMale = Math.random() > 0.5;
+    const name = (isMale ? maleNames : femaleNames)[Math.floor(Math.random() * (isMale ? maleNames.length : femaleNames.length))];
+    const characterClass = classes[Math.floor(Math.random() * classes.length)];
+
+    const rollStat = () => Math.floor(Math.random() * 15) + 8;
+
+    const newCharacter: Character = {
+      id: Date.now().toString(),
+      name,
+      race: "Humano",
+      characterClass,
+      height: heights[Math.floor(Math.random() * heights.length)],
+      age: ages[Math.floor(Math.random() * ages.length)],
+      description: "",
+      images: [],
+      hp: rollStat() * 2,
+      maxHp: rollStat() * 2,
+      mana: rollStat(),
+      maxMana: rollStat(),
+      stats: {
+        strength: rollStat(),
+        intellect: rollStat(),
+        endurance: rollStat(),
+        agility: rollStat(),
+        sanity: rollStat(),
+        manaStat: rollStat(),
+      },
+      createdAt: new Date(),
+    };
+
+    setEditForm({
+      name: newCharacter.name,
+      race: newCharacter.race,
+      characterClass: newCharacter.characterClass,
+      height: newCharacter.height,
+      age: newCharacter.age,
+      description: newCharacter.description,
+      images: newCharacter.images,
+      hp: newCharacter.hp,
+      maxHp: newCharacter.maxHp,
+      mana: newCharacter.mana,
+      maxMana: newCharacter.maxMana,
+      stats: newCharacter.stats,
+    });
+    setSelectedCharacter(null);
+    setIsEditing(true);
+  };
+
+  const createNewCharacter = () => {
+    setEditForm({
+      name: "",
+      race: "Humano",
+      characterClass: "Cangaceiro",
+      height: "",
+      age: "",
+      description: "",
+      images: [] as string[],
+      hp: 10,
+      maxHp: 10,
+      mana: 10,
+      maxMana: 10,
+      stats: {
+        strength: 10,
+        intellect: 10,
+        endurance: 10,
+        agility: 10,
+        sanity: 10,
+        manaStat: 10,
+      },
+    });
+    setSelectedCharacter(null);
+    setIsEditing(true);
+  };
+
+  const saveCharacter = () => {
+    const newCharacter: Character = {
+      id: selectedCharacter?.id || Date.now().toString(),
+      name: editForm.name || "Sem Nome",
+      race: editForm.race,
+      characterClass: editForm.characterClass,
+      height: editForm.height,
+      age: editForm.age,
+      description: editForm.description,
+      images: editForm.images,
+      hp: editForm.hp,
+      maxHp: editForm.maxHp,
+      mana: editForm.mana,
+      maxMana: editForm.maxMana,
+      stats: editForm.stats,
+      createdAt: selectedCharacter?.createdAt || new Date(),
+    };
+
+    if (selectedCharacter) {
+      setSavedCharacters(savedCharacters.map(c => c.id === selectedCharacter.id ? newCharacter : c));
+    } else {
+      setSavedCharacters([newCharacter, ...savedCharacters]);
+    }
+
+    setSelectedCharacter(newCharacter);
+    setIsEditing(false);
+  };
+
+  const deleteCharacter = (id: string) => {
+    setSavedCharacters(savedCharacters.filter(c => c.id !== id));
+    if (selectedCharacter?.id === id) {
+      setSelectedCharacter(null);
+      setIsEditing(false);
+    }
+  };
+
+  const editCharacter = (character: Character) => {
+    setEditForm({
+      name: character.name,
+      race: character.race,
+      characterClass: character.characterClass,
+      height: character.height,
+      age: character.age,
+      description: character.description,
+      images: character.images || [],
+      hp: character.hp,
+      maxHp: character.maxHp,
+      mana: character.mana,
+      maxMana: character.maxMana,
+      stats: { ...character.stats },
+    });
+    setSelectedCharacter(character);
+    setIsEditing(true);
+  };
+
+  const StatBar = ({ label, color, statKey }: { label: string; color: string; statKey: keyof typeof editForm.stats }) => {
+    const points = editForm.stats[statKey];
+    const result = rollResults[statKey];
+    const modifier = modifiers[statKey] || 0;
+
+    const rollStat = () => {
+      const rolls: number[] = [];
+      for (let i = 0; i < points; i++) {
+        rolls.push(Math.floor(Math.random() * 20) + 1);
+      }
+      const highest = Math.max(...rolls);
+      const finalTotal = highest + modifier;
+      setRollResults({ ...rollResults, [statKey]: { rolls, total: finalTotal, modifier } });
+    };
+
+    const addPoint = () => {
+      if (points < 10) {
+        setEditForm({
+          ...editForm,
+          stats: { ...editForm.stats, [statKey]: points + 1 },
+        });
+      }
+    };
+
+    const removePoint = () => {
+      if (points > 1) {
+        setEditForm({
+          ...editForm,
+          stats: { ...editForm.stats, [statKey]: points - 1 },
+        });
+      }
+    };
+
+    return (
+      <div className="flex items-center gap-3 mb-4">
+        <span className="w-24 text-sm font-bold text-[#8B0000]">{label}</span>
+        
+        {/* Bolinhas representando pontos */}
+        <div className="flex items-center gap-1">
+          {[...Array(10)].map((_, i) => (
+            <button
+              key={i}
+              onClick={points > i + 1 ? removePoint : addPoint}
+              className={`w-5 h-5 rounded-full border-2 transition-all ${
+                i < points
+                  ? color
+                  : 'bg-transparent border-[#8B0000]/30'
+              } ${i < points ? 'border-[#8B0000]' : 'hover:border-[#8B0000]/50'}`}
+            />
+          ))}
+        </div>
+
+        {/* Campo numérico */}
+        <input
+          type="number"
+          min="1"
+          max="10"
+          value={points}
+          onChange={(e) => {
+            const val = Math.max(1, Math.min(10, parseInt(e.target.value) || 1));
+            setEditForm({
+              ...editForm,
+              stats: { ...editForm.stats, [statKey]: val },
+            });
+          }}
+          className="w-12 bg-[#1a1a1a] border border-[#8B0000]/50 rounded px-2 py-1 text-center text-white text-sm"
+        />
+
+        {/* Botão rolar */}
+        <button
+          onClick={rollStat}
+          className="px-3 py-1 bg-[#8B0000] text-white rounded text-sm font-bold hover:bg-[#a00000] transition-colors"
+        >
+          ◆ Rolar
+        </button>
+
+        {/* Modificador */}
+        <div className="flex items-center gap-1">
+          <span className="text-[#8B0000] text-xs">Mod:</span>
+          <input
+            type="number"
+            value={modifier}
+            onChange={(e) => {
+              setModifiers({ ...modifiers, [statKey]: parseInt(e.target.value) || 0 });
+            }}
+            className="w-12 bg-[#1a1a1a] border border-[#8B0000]/50 rounded px-2 py-1 text-center text-white text-sm"
+          />
+        </div>
+
+        {/* Resultado da rolagem */}
+        {result && (
+          <div className="flex flex-col items-center min-w-[100px]">
+            <span className="text-[#8B0000] text-xs font-bold">
+              {result.rolls.join(", ")} {modifier !== 0 && (modifier > 0 ? `+ ${modifier}` : `- ${Math.abs(modifier)}`)}
+            </span>
+            <span className="text-[#8B0000] font-bold text-sm">
+              Resultado: {result.total}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="medieval-title text-4xl md:text-5xl text-white glow-red mb-2">
+          ⚔ Personagens
+        </h2>
+        <p className="text-[#F5DEB3]/60 italic font-serif">
+          Crie ou edite seu personagem...
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-4 justify-center">
+        <button
+          onClick={createNewCharacter}
+          className="gold-button px-6 py-3 rounded-xl font-bold"
+        >
+          + Novo Personagem
+        </button>
+        <button
+          onClick={generateRandomCharacter}
+          className="px-6 py-3 bg-[#8B0000] text-white rounded-xl font-bold hover:bg-[#a00000] border-2 border-[#8B0000]"
+        >
+          ◆ Gerar Aleatório
+        </button>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-8">
+        <div className="md:col-span-1">
+          <div className="nordestino-card rounded-2xl p-6">
+              <h3 className="medieval-title text-xl text-[#8B0000] mb-4">Personagens Salvos</h3>
+            {savedCharacters.length === 0 ? (
+              <p className="text-[#8B0000] italic text-center py-8">Nenhum personagem criado ainda</p>
+            ) : (
+              <div className="space-y-3 max-h-[500px] overflow-y-auto scroll-parchment pr-2">
+                {savedCharacters.map((char) => (
+                  <div
+                    key={char.id}
+                    onClick={() => editCharacter(char)}
+                    className={`stat-box rounded-xl p-4 cursor-pointer transition-all ${
+                      selectedCharacter?.id === char.id ? "border-[#FF4444]" : "border-[#8B0000]/30"
+                    }`}
+                  >
+                    <div className="flex gap-3">
+                      {char.images && char.images.length > 0 && (
+                        <img
+                          src={char.images[0]}
+                          alt={char.name}
+                          className="w-12 h-12 rounded-lg object-cover border border-[#8B0000] cursor-zoom-in"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEnlargedImage(char.images[0]);
+                          }}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      )}
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h4 className="font-bold text-white">{char.name}</h4>
+                            <p className="text-[#8B0000] text-sm font-bold">{char.characterClass}</p>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); deleteCharacter(char.id); }}
+                            className="text-red-500 hover:text-red-400"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-4 mt-2 text-xs text-[#F5DEB3]/60">
+                      <span>HP: {char.hp}/{char.maxHp}</span>
+                      <span>DT: {char.mana}/{char.maxMana}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="md:col-span-2">
+          {isEditing ? (
+            <div className="nordestino-card rounded-2xl p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="medieval-title text-2xl text-[#8B0000]">
+                  {selectedCharacter ? "Editando Personagem" : "Novo Personagem"}
+                </h3>
+                <button
+                  onClick={saveCharacter}
+                  className="px-6 py-2 bg-red-800 text-white rounded-lg font-bold hover:bg-red-700"
+                >
+                  ⊕ Salvar
+                </button>
+              </div>
+
+              <div className="flex gap-4 mb-6">
+                <div className="flex-1">
+                  <label className="block text-[#8B0000] font-bold mb-2">Nome</label>
+                  <input
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className="w-full input-medieval rounded-lg px-4 py-2"
+                    placeholder="Nome do personagem..."
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-[#8B0000] font-bold mb-2">Classe</label>
+                  <select
+                    value={editForm.characterClass}
+                    onChange={(e) => setEditForm({ ...editForm, characterClass: e.target.value })}
+                    className="w-full input-medieval rounded-lg px-4 py-2 text-[#8B0000] font-bold"
+                  >
+                    {classes.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[#8B0000] font-bold mb-2">Altura</label>
+                <input
+                  type="text"
+                  value={editForm.height}
+                  onChange={(e) => setEditForm({ ...editForm, height: e.target.value })}
+                  className="w-full input-medieval rounded-lg px-4 py-2"
+                  placeholder="Ex: 1,70m"
+                />
+              </div>
+              <div>
+                <label className="block text-[#8B0000] font-bold mb-2">Idade</label>
+                <input
+                  type="text"
+                  value={editForm.age}
+                  onChange={(e) => setEditForm({ ...editForm, age: e.target.value })}
+                  className="w-full input-medieval rounded-lg px-4 py-2"
+                  placeholder="Ex: 25"
+                />
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-[#8B0000] font-bold mb-2">Imagens do Personagem</label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    id="imageUrlInput"
+                    className="flex-1 input-medieval rounded-lg px-4 py-2"
+                    placeholder="URL da imagem (ex: https://exemplo.com/imagem.jpg)"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        const input = document.getElementById('imageUrlInput') as HTMLInputElement;
+                        if (input.value.trim()) {
+                          setEditForm({ ...editForm, images: [...editForm.images, input.value.trim()] });
+                          input.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const input = document.getElementById('imageUrlInput') as HTMLInputElement;
+                      if (input.value.trim()) {
+                        setEditForm({ ...editForm, images: [...editForm.images, input.value.trim()] });
+                        input.value = '';
+                      }
+                    }}
+                    className="px-4 py-2 bg-[#8B0000] text-white rounded-lg font-bold hover:bg-[#a00000]"
+                  >
+                    +
+                  </button>
+                </div>
+                <p className="text-[#F5DEB3]/50 text-xs mb-3">Pressione Enter ou clique em + para adicionar</p>
+                {editForm.images.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 max-h-60 overflow-y-auto">
+                    {editForm.images.map((img, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={img}
+                          alt={`Imagem ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg border-2 border-[#8B0000] cursor-zoom-in"
+                          onClick={() => setEnlargedImage(img)}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newImages = editForm.images.filter((_, i) => i !== index);
+                            setEditForm({ ...editForm, images: newImages });
+                          }}
+                          className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-[#8B0000] font-bold mb-2">Descrição</label>
+                <textarea
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  className="w-full input-medieval rounded-lg px-4 py-2 resize-none"
+                  rows={3}
+                  placeholder="História e aparência do personagem..."
+                />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="block text-[#8B0000] font-bold mb-2">Pontos de Vida</label>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-6 bg-[#1a1a1a] rounded-full overflow-hidden border border-red-900">
+                      <div
+                        className="h-full bg-gradient-to-r from-red-800 to-red-600 transition-all"
+                        style={{ width: `${(editForm.hp / editForm.maxHp) * 100}%` }}
+                      />
+                    </div>
+                    <input
+                      type="number"
+                      min="1"
+                      value={editForm.hp}
+                      onChange={(e) => setEditForm({ ...editForm, hp: Math.max(0, parseInt(e.target.value) || 0) })}
+                      className="w-16 bg-[#1a1a1a] border border-red-900 rounded px-2 py-1 text-center text-white"
+                    />
+                    <span className="text-[#F5DEB3]">/</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={editForm.maxHp}
+                      onChange={(e) => setEditForm({ ...editForm, maxHp: Math.max(1, parseInt(e.target.value) || 1) })}
+                      className="w-16 bg-[#1a1a1a] border border-red-900 rounded px-2 py-1 text-center text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[#8B0000] font-bold mb-2">DT</label>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-6 bg-[#1a1a1a] rounded-full overflow-hidden border border-purple-600">
+                      <div
+                        className="h-full bg-gradient-to-r from-purple-700 to-purple-400 transition-all"
+                        style={{ width: `${(editForm.mana / editForm.maxMana) * 100}%` }}
+                      />
+                    </div>
+                    <input
+                      type="number"
+                      min="1"
+                      value={editForm.mana}
+                      onChange={(e) => setEditForm({ ...editForm, mana: Math.max(0, parseInt(e.target.value) || 0) })}
+                      className="w-16 bg-[#1a1a1a] border border-purple-900 rounded px-2 py-1 text-center text-white"
+                    />
+                    <span className="text-[#F5DEB3]">/</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={editForm.maxMana}
+                      onChange={(e) => setEditForm({ ...editForm, maxMana: Math.max(1, parseInt(e.target.value) || 1) })}
+                      className="w-16 bg-[#1a1a1a] border border-purple-900 rounded px-2 py-1 text-center text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="medieval-title text-lg text-[#8B0000]">✦ Atributos</h4>
+                <StatBar label="Força" color="bg-red-700" statKey="strength" />
+                <StatBar label="Intelecto" color="bg-red-900" statKey="intellect" />
+                <StatBar label="Resistência" color="bg-red-700" statKey="endurance" />
+                <StatBar label="Agilidade" color="bg-red-900" statKey="agility" />
+                <StatBar label="Sanidade" color="bg-red-700" statKey="sanity" />
+                <StatBar label="Mana" color="bg-red-900" statKey="manaStat" />
+              </div>
+            </div>
+          ) : (
+            <div className="nordestino-card rounded-2xl p-12 flex items-center justify-center min-h-[400px]">
+              <div className="text-center text-[#F5DEB3]/50">
+                <p className="text-6xl mb-4 text-[#8B0000]">⚔</p>
+                <p className="text-xl font-serif text-[#8B0000]">Selecione um personagem ou crie um novo</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Modal de imagem ampliada */}
+      {enlargedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)' }}
+          onClick={() => setEnlargedImage(null)}
+        >
+          <div className="relative max-w-[95vw] max-h-[95vh]">
+            <img
+              src={enlargedImage}
+              alt="Imagem ampliada"
+              className="max-w-full max-h-[95vh] rounded-lg border-4 border-[#8B0000] shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              onClick={() => setEnlargedImage(null)}
+              className="absolute -top-4 -right-4 bg-[#8B0000] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold hover:bg-red-700 transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
