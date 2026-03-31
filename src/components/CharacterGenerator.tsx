@@ -103,6 +103,11 @@ export function CharacterGenerator() {
 
     const rollStat = () => Math.floor(Math.random() * 15) + 8;
 
+    const rollHp = () => Math.floor(Math.random() * 15) + 8;
+    const rollMana = () => Math.floor(Math.random() * 15) + 8;
+    const maxHp = rollHp() * 2;
+    const maxMana = rollMana();
+
     const newCharacter: Character = {
       id: Date.now().toString(),
       name,
@@ -112,10 +117,10 @@ export function CharacterGenerator() {
       age: ages[Math.floor(Math.random() * ages.length)],
       description: "",
       images: [],
-      hp: rollStat() * 2,
-      maxHp: rollStat() * 2,
-      mana: rollStat(),
-      maxMana: rollStat(),
+      hp: maxHp,
+      maxHp,
+      mana: maxMana,
+      maxMana,
       stats: {
         strength: rollStat(),
         intellect: rollStat(),

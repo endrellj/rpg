@@ -159,7 +159,7 @@ export function Notes() {
               <div className="text-center py-12">
                 <p className="text-6xl mb-4 text-[#8B4513]">✎</p>
                 <p className="text-[#8B4513]/60 italic font-serif">
-                  Nenhuma página écritta
+                  Nenhuma página escrita
                 </p>
               </div>
             ) : (

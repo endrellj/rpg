@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import plugin from "bun-plugin-tailwind";
-import { existsSync } from "fs";
-import { rm } from "fs/promises";
+import { existsSync, copyFileSync, mkdirSync, readdirSync } from "fs";
+import { rm, readdir } from "fs/promises";
 import path from "path";
 
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
@@ -156,5 +156,49 @@ const outputTable = result.outputs.map(output => ({
 
 console.table(outputTable);
 const buildTime = (end - start).toFixed(2);
+
+// Copy public assets to dist
+const publicDir = path.join(process.cwd(), "public");
+if (existsSync(publicDir)) {
+  console.log("\n📦 Copying public assets...\n");
+  const copyDir = (src: string, dest: string) => {
+    if (!existsSync(dest)) mkdirSync(dest, { recursive: true });
+    for (const entry of readdirSync(src)) {
+      const srcPath = path.join(src, entry);
+      const destPath = path.join(dest, entry);
+      const stat = Bun.file(srcPath);
+      if (stat.type === "directory" || existsSync(srcPath) && Bun.file(srcPath).size > 0 && !srcPath.includes("node_modules")) {
+        const isDir = Bun.file(srcPath).type === "" || (existsSync(srcPath) && !srcPath.endsWith(".wasm") && !srcPath.endsWith(".json") && !srcPath.endsWith(".png") && !srcPath.endsWith(".jpg"));
+        try {
+          const s = Bun.file(srcPath);
+          if (s.type === "directory" || (existsSync(srcPath) && !srcPath.match(/\.\w+$/))) {
+            copyDir(srcPath, destPath);
+          } else {
+            copyFileSync(srcPath, destPath);
+          }
+        } catch {
+          copyDir(srcPath, destPath);
+        }
+      }
+    }
+  };
+
+  const copyRecursive = (src: string, dest: string) => {
+    if (!existsSync(dest)) mkdirSync(dest, { recursive: true });
+    const entries = readdirSync(src, { withFileTypes: true });
+    for (const entry of entries) {
+      const srcPath = path.join(src, entry.name);
+      const destPath = path.join(dest, entry.name);
+      if (entry.isDirectory()) {
+        copyRecursive(srcPath, destPath);
+      } else {
+        copyFileSync(srcPath, destPath);
+      }
+    }
+  };
+
+  copyRecursive(publicDir, outdir);
+  console.log("✅ Public assets copied\n");
+}
 
 console.log(`\n✅ Build completed in ${buildTime}ms\n`);
