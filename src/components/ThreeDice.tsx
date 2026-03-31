@@ -125,8 +125,11 @@ export default function ThreeDice({ diceType, quantity, onRollComplete, onClose,
     setPhase('rolling');
     setResultValues([]);
     hasRolledRef.current = false;
-    onRollAgain();
-  }, [onRollAgain]);
+    if (diceBoxRef.current) {
+      const notation = `${quantity}${diceSideMap[diceType] || diceType}`;
+      diceBoxRef.current.roll(notation);
+    }
+  }, [quantity, diceType]);
 
   const modifier = lastResult?.modifier ?? 0;
 

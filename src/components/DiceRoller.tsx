@@ -45,10 +45,8 @@ export function DiceRoller() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setShowDice3D(false);
-        return;
-      }
+      // Only handle shortcuts when modal is closed
+      if (showDice3D) return;
 
       const num = parseInt(e.key);
       if (num >= 1 && num <= 9) {
@@ -78,7 +76,7 @@ export function DiceRoller() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lastRoll]);
+  }, [showDice3D, lastRoll]);
 
   const rollDice = (name: string, qty?: number, mod?: number) => {
     if (qty !== undefined) setQuantity(qty);
