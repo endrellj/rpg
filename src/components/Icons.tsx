@@ -210,3 +210,30 @@ export const RopeIcon = ({ className = "", size = 24 }: IconProps) => (
     <path d="M4 18C4 18 6 16 8 18C10 20 12 18 14 20C16 22 18 20 20 22" />
   </svg>
 );
+
+export const XIcon = ({ className = "", size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
+export const PlusIcon = ({ className = "", size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+
+export const EditIcon = ({ className = "", size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 4H4C2.89543 4 2 4.89543 2 6V20C2 21.1046 2.89543 22 4 22H18C19.1046 22 20 21.1046 20 20V13" />
+    <path d="M18.5 2.5C19.3284 1.67157 20.6716 1.67157 21.5 2.5C22.3284 3.32843 22.3284 4.67157 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" />
+  </svg>
+);
+
+export const Feather = ({ className = "", size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.24 12.24C20.3292 13.4922 19.9039 14.1144 19.1582 15.4668C18.1126 16.8192 17.7035 17.8458 16.0957 18.4265C14.4879 19.0073 12.748 19.1181 11.0795 18.7461C9.41104 18.3741 7.88301 17.5345 6.67316 16.3247C5.46332 15.1148 4.62375 13.5868 4.25173 11.9183C3.87972 10.2498 3.99053 8.5099 4.57128 6.90215C5.15203 5.29436 6.17869 3.88529 7.53108 2.83964C8.88347 1.794 9.50566 1.15517 11.2079 0.997559C12.4531 1.97727 12.6983 2.97727 12.9435 3.99756C8.77437 5.33217 5.67854 8.60062 6.22836 11.0558C6.77817 13.5109 9.92626 15.1319 13.44 15.24C14.4265 15.2681 15.3971 15.0406 16.2647 14.5792C17.1323 14.1178 17.8692 13.4379 18.41 12.6C18.7611 12.0523 19.0327 11.4558 19.2167 10.83C19.4007 10.2041 19.4952 9.55681 19.4971 8.90601C19.499 8.25521 19.4083 7.60721 19.228 6.98012C19.0477 6.35302 18.7798 5.75403 18.4324 5.20312C17.3142 3.36852 15.4722 2.11795 13.3827 1.7632C11.2932 1.40845 9.17103 1.98614 7.58521 3.33787C6.57061 4.21034 5.82624 5.33534 5.43758 6.58408C5.04892 7.83281 5.03175 9.15472 5.38782 10.4029C5.74389 11.6511 6.45819 12.7751 7.44795 13.6423C8.43772 14.5094 9.66087 15.0832 10.9707 15.2946C10.5929 15.7195 9.45398 16.7121 8.83936 17.9933C8.22475 19.2745 8.18989 20.7373 8.74187 21.04" />
+  </svg>
+);

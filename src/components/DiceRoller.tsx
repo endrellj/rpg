@@ -45,8 +45,8 @@ export function DiceRoller() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (showDice3D) {
-        if (e.key === 'Escape') setShowDice3D(false);
+      if (e.key === 'Escape') {
+        setShowDice3D(false);
         return;
       }
 
@@ -66,6 +66,7 @@ export function DiceRoller() {
           setQuantity(lastRoll.rolls.length);
           setShowDice3D(true);
         }
+        return;
       }
 
       const dice = diceTypes.find(d => d.key === e.key);
@@ -77,7 +78,7 @@ export function DiceRoller() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showDice3D, lastRoll]);
+  }, [lastRoll]);
 
   const rollDice = (name: string, qty?: number, mod?: number) => {
     if (qty !== undefined) setQuantity(qty);
@@ -116,9 +117,6 @@ export function DiceRoller() {
 
   const handleRollAgain = useCallback(() => {
     setShowDice3D(false);
-    setTimeout(() => {
-      setShowDice3D(true);
-    }, 100);
   }, []);
 
   const clearHistory = () => setResults([]);
@@ -134,7 +132,7 @@ export function DiceRoller() {
   return (
     <div className="flex flex-col lg:flex-row gap-6 h-full">
       {/* 3D Dice Overlay */}
-      {showDice3D && lastRoll && (
+      {showDice3D && (
         <ThreeDice
           diceType={currentDiceType}
           quantity={quantity}
@@ -142,16 +140,6 @@ export function DiceRoller() {
           onClose={handleCloseDice}
           onRollAgain={handleRollAgain}
           lastResult={lastRoll}
-        />
-      )}
-      {showDice3D && !lastRoll && (
-        <ThreeDice
-          diceType={currentDiceType}
-          quantity={quantity}
-          onRollComplete={handleRollComplete}
-          onClose={handleCloseDice}
-          onRollAgain={handleRollAgain}
-          lastResult={null}
         />
       )}
 

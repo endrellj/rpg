@@ -38,6 +38,25 @@ export default function ThreeDice({ diceType, quantity, onRollComplete, onClose,
   onRollCompleteRef.current = onRollComplete;
   const hasRolledRef = useRef(false);
 
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key === 'r' || e.key === 'R') {
+        if (phase === 'result') {
+          handleRollAgain();
+        }
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [phase, onClose, handleRollAgain]);
+
   useEffect(() => {
     if (!containerRef.current) return;
 
