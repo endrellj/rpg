@@ -38,6 +38,20 @@ export default function ThreeDice({ diceType, quantity, onRollComplete, onClose,
   onRollCompleteRef.current = onRollComplete;
   const hasRolledRef = useRef(false);
 
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
+  const handleRollAgain = useCallback(() => {
+    setPhase('rolling');
+    setResultValues([]);
+    hasRolledRef.current = false;
+    if (diceBoxRef.current) {
+      const notation = `${quantity}${diceSideMap[diceType] || diceType}`;
+      diceBoxRef.current.roll(notation);
+    }
+  }, [quantity, diceType]);
+
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -78,7 +92,7 @@ export default function ThreeDice({ diceType, quantity, onRollComplete, onClose,
       enableShadows: true,
       theme: 'default',
       scale: 9,
-      onRollComplete: (rollResult) => {
+      onRollComplete: (rollResult: any[]) => {
         if (hasRolledRef.current) return;
         hasRolledRef.current = true;
 
@@ -115,20 +129,6 @@ export default function ThreeDice({ diceType, quantity, onRollComplete, onClose,
       diceBox.clear();
       diceBoxRef.current = null;
     };
-  }, []);
-
-  const handleClose = useCallback(() => {
-    onClose();
-  }, [onClose]);
-
-  const handleRollAgain = useCallback(() => {
-    setPhase('rolling');
-    setResultValues([]);
-    hasRolledRef.current = false;
-    if (diceBoxRef.current) {
-      const notation = `${quantity}${diceSideMap[diceType] || diceType}`;
-      diceBoxRef.current.roll(notation);
-    }
   }, [quantity, diceType]);
 
   const modifier = lastResult?.modifier ?? 0;

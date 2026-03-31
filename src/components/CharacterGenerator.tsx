@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { DaggerIcon, SwordIcon } from "./Icons";
+import { DaggerIcon, SwordIcon, PlusIcon, XIcon, EditIcon } from "./Icons";
 
 interface Character {
   id: string;
@@ -318,15 +318,17 @@ export function CharacterGenerator() {
         <div className="flex flex-wrap gap-3 justify-center lg:justify-start items-center">
           <button
             onClick={createNewCharacter}
-            className="gold-button px-5 py-2 rounded-lg font-bold text-sm"
+            className="gold-button px-5 py-2 rounded-lg font-bold text-sm flex items-center gap-2"
           >
-            + Novo
+            <PlusIcon size={16} />
+            <span>Novo</span>
           </button>
           <button
             onClick={generateRandomCharacter}
-            className="px-4 py-2 bg-[#8B4513]/80 text-[#FFD700] rounded-lg font-bold hover:bg-[#8B4513] border border-[#8B4513]/50 hover:border-[#FFD700]/30 transition-all text-sm"
+            className="px-4 py-2 bg-[#8B4513]/80 text-[#FFD700] rounded-lg font-bold hover:bg-[#8B4513] border border-[#8B4513]/50 hover:border-[#FFD700]/30 transition-all text-sm flex items-center gap-2"
           >
-            ◆ Aleatório
+            <SwordIcon size={16} />
+            <span>Aleatório</span>
           </button>
         </div>
 
@@ -334,8 +336,9 @@ export function CharacterGenerator() {
         {isEditing ? (
           <div className="nordestino-card rounded-xl p-4">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="medieval-title text-lg text-[#8B4513]">
-                {selectedCharacter ? "Editando" : "Novo Personagem"}
+              <h3 className="medieval-title text-lg text-[#8B4513] flex items-center gap-2">
+                <EditIcon size={18} />
+                <span>{selectedCharacter ? "Editando" : "Novo"}</span>
               </h3>
               <div className="flex gap-2">
                 <button
@@ -346,9 +349,10 @@ export function CharacterGenerator() {
                 </button>
                 <button
                   onClick={saveCharacter}
-                  className="px-4 py-1 bg-[#8B4513] text-[#FFD700] rounded-lg font-bold hover:bg-[#9B5523] text-sm"
+                  className="px-4 py-1 bg-[#8B4513] text-[#FFD700] rounded-lg font-bold hover:bg-[#9B5523] text-sm flex items-center gap-1"
                 >
-                  Salvar
+                  <PlusIcon size={14} />
+                  <span>Salvar</span>
                 </button>
               </div>
             </div>
@@ -415,19 +419,21 @@ export function CharacterGenerator() {
                 </div>
                 <div className="flex gap-1 mt-1">
                   <input
-                    type="number"
-                    min="0"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={editForm.hp}
                     onChange={(e) => setEditForm({ ...editForm, hp: Math.max(0, parseInt(e.target.value) || 0) })}
-                    className="w-12 bg-[#0d0805] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs"
+                    className="w-12 bg-[#0d0805] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs focus:border-[#8B4513] focus:outline-none"
                   />
                   <span className="text-[#8B4513]/50 text-xs self-center">/</span>
                   <input
-                    type="number"
-                    min="1"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={editForm.maxHp}
                     onChange={(e) => setEditForm({ ...editForm, maxHp: Math.max(1, parseInt(e.target.value) || 1) })}
-                    className="w-12 bg-[#0d0805] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs"
+                    className="w-12 bg-[#0d0805] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs focus:border-[#8B4513] focus:outline-none"
                   />
                 </div>
               </div>
@@ -446,19 +452,21 @@ export function CharacterGenerator() {
                 </div>
                 <div className="flex gap-1 mt-1">
                   <input
-                    type="number"
-                    min="0"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={editForm.mana}
                     onChange={(e) => setEditForm({ ...editForm, mana: Math.max(0, parseInt(e.target.value) || 0) })}
-                    className="w-12 bg-[#0d0805] border border-purple-900/40 rounded px-1 py-0.5 text-center text-white text-xs"
+                    className="w-12 bg-[#0d0805] border border-purple-900/40 rounded px-1 py-0.5 text-center text-white text-xs focus:border-purple-600 focus:outline-none"
                   />
                   <span className="text-purple-400/50 text-xs self-center">/</span>
                   <input
-                    type="number"
-                    min="1"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={editForm.maxMana}
                     onChange={(e) => setEditForm({ ...editForm, maxMana: Math.max(1, parseInt(e.target.value) || 1) })}
-                    className="w-12 bg-[#0d0805] border border-purple-900/40 rounded px-1 py-0.5 text-center text-white text-xs"
+                    className="w-12 bg-[#0d0805] border border-purple-900/40 rounded px-1 py-0.5 text-center text-white text-xs focus:border-purple-600 focus:outline-none"
                   />
                 </div>
               </div>
