@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import {
+  SwordIcon, TargetIcon, DiamondIcon, HeartIcon,
+  SunIcon, FeatherIcon, ScrollIcon, EyeIcon
+} from "./Icons";
 
 interface Note {
   id: string;
@@ -41,13 +45,13 @@ export function Notes() {
     localStorage.setItem("rpg-notes", JSON.stringify(notes));
   }, [notes]);
 
-  const categories: { id: Note["category"]; label: string; icon: string }[] = [
-    { id: "session", label: "Sessão", icon: "○" },
-    { id: "character", label: "Herói", icon: "⚔" },
-    { id: "quest", label: "Missão", icon: "◎" },
-    { id: "npc", label: "Personagem", icon: "◇" },
-    { id: "location", label: "Lugar", icon: "□" },
-    { id: "other", label: "Outro", icon: "✎" },
+  const categories: { id: Note["category"]; label: string; icon: React.ReactNode }[] = [
+    { id: "session", label: "Sessão", icon: <ScrollIcon size={16} /> },
+    { id: "character", label: "Herói", icon: <SwordIcon size={16} /> },
+    { id: "quest", label: "Missão", icon: <TargetIcon size={16} /> },
+    { id: "npc", label: "Personagem", icon: <HeartIcon size={16} /> },
+    { id: "location", label: "Lugar", icon: <SunIcon size={16} /> },
+    { id: "other", label: "Outro", icon: <FeatherIcon size={16} /> },
   ];
 
   const createNote = () => {

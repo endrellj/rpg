@@ -1,5 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
 import ThreeDice from "./ThreeDice";
+import {
+  CrossedSwordsIcon, SwordIcon, DaggerIcon, TargetIcon,
+  QuestionIcon, FeatherIcon, CoinIcon, TriangleIcon,
+  DiceIcon, DiamondIcon, PentagonIcon, HexagonIcon,
+  LightningIcon, SkullIcon
+} from "./Icons";
 
 interface DiceResult {
   type: string;
@@ -10,23 +16,23 @@ interface DiceResult {
 }
 
 const quickPresets = [
-  { label: "Ataque", notation: "1d20", modifier: 0, icon: "⚔️" },
-  { label: "Dano Espada", notation: "1d8", modifier: 3, icon: "🗡️" },
-  { label: "Dano Punhal", notation: "1d4", modifier: 2, icon: "🔪" },
-  { label: "Iniciativa", notation: "1d20", modifier: 2, icon: "🎯" },
-  { label: "Teste", notation: "2d6", modifier: 0, icon: "📊" },
-  { label: "Vantagem", notation: "2d20", modifier: 0, icon: "✨" },
+  { label: "Ataque", notation: "1d20", modifier: 0, icon: <CrossedSwordsIcon size={16} /> },
+  { label: "Dano", notation: "1d8", modifier: 3, icon: <SwordIcon size={16} /> },
+  { label: "Punhal", notation: "1d4", modifier: 2, icon: <DaggerIcon size={16} /> },
+  { label: "Iniciativa", notation: "1d20", modifier: 2, icon: <TargetIcon size={16} /> },
+  { label: "Teste", notation: "2d6", modifier: 0, icon: <QuestionIcon size={16} /> },
+  { label: "Vantagem", notation: "2d20", modifier: 0, icon: <FeatherIcon size={16} /> },
 ];
 
 const diceTypes = [
-  { name: "d2", sides: 2, icon: "🪙", key: "1" },
-  { name: "d4", sides: 4, icon: "🔺", key: "2" },
-  { name: "d6", sides: 6, icon: "🎲", key: "3" },
-  { name: "d8", sides: 8, icon: "💎", key: "4" },
-  { name: "d10", sides: 10, icon: "🔶", key: "5" },
-  { name: "d12", sides: 12, icon: "⬡", key: "6" },
-  { name: "d20", sides: 20, icon: "⚡", key: "7" },
-  { name: "d100", sides: 100, icon: "💀", key: "8" },
+  { name: "d2", sides: 2, icon: <CoinIcon size={22} />, key: "1" },
+  { name: "d4", sides: 4, icon: <TriangleIcon size={22} />, key: "2" },
+  { name: "d6", sides: 6, icon: <DiceIcon size={22} />, key: "3" },
+  { name: "d8", sides: 8, icon: <DiamondIcon size={22} />, key: "4" },
+  { name: "d10", sides: 10, icon: <PentagonIcon size={22} />, key: "5" },
+  { name: "d12", sides: 12, icon: <HexagonIcon size={22} />, key: "6" },
+  { name: "d20", sides: 20, icon: <LightningIcon size={22} />, key: "7" },
+  { name: "d100", sides: 100, icon: <SkullIcon size={22} />, key: "8" },
 ];
 
 export function DiceRoller() {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { DaggerIcon, SwordIcon } from "./Icons";
 
 interface Character {
   id: string;
@@ -246,88 +247,62 @@ export function CharacterGenerator() {
       setRollResults({ ...rollResults, [statKey]: { rolls, total: finalTotal, modifier } });
     };
 
-    const addPoint = () => {
-      if (points < 10) {
-        setEditForm({
-          ...editForm,
-          stats: { ...editForm.stats, [statKey]: points + 1 },
-        });
-      }
-    };
-
-    const removePoint = () => {
-      if (points > 1) {
-        setEditForm({
-          ...editForm,
-          stats: { ...editForm.stats, [statKey]: points - 1 },
-        });
-      }
+    const adjustPoints = (delta: number) => {
+      const newVal = Math.max(1, Math.min(10, points + delta));
+      setEditForm({
+        ...editForm,
+        stats: { ...editForm.stats, [statKey]: newVal },
+      });
     };
 
     return (
-      <div className="flex items-center gap-3 mb-4">
-        <span className="w-24 text-sm font-bold text-[#8B4513]">{label}</span>
+      <div className="flex items-center gap-2">
+        <span className="w-20 text-xs font-bold text-[#8B4513] truncate">{label}</span>
         
-        {/* Bolinhas representando pontos */}
-        <div className="flex items-center gap-1">
-          {[...Array(10)].map((_, i) => (
-            <button
-              key={i}
-              onClick={points > i + 1 ? removePoint : addPoint}
-              className={`w-5 h-5 rounded-full border-2 transition-all ${
-                i < points
-                  ? color
-                  : 'bg-transparent border-[#8B4513]/30'
-              } ${i < points ? 'border-[#8B4513]' : 'hover:border-[#8B4513]/50'}`}
-            />
-          ))}
+        {/* Point buttons */}
+        <div className="flex items-center gap-0.5">
+          <button
+            onClick={() => adjustPoints(-1)}
+            className="w-5 h-5 rounded bg-[#0d0805] border border-[#8B4513]/40 text-[#FFD700] text-xs hover:bg-[#8B4513]/30"
+          >
+            −
+          </button>
+          <span className="w-6 text-center text-white text-sm font-bold">{points}</span>
+          <button
+            onClick={() => adjustPoints(1)}
+            className="w-5 h-5 rounded bg-[#0d0805] border border-[#8B4513]/40 text-[#FFD700] text-xs hover:bg-[#8B4513]/30"
+          >
+            +
+          </button>
         </div>
 
-        {/* Campo numérico */}
-        <input
-          type="number"
-          min="1"
-          max="10"
-          value={points}
-          onChange={(e) => {
-            const val = Math.max(1, Math.min(10, parseInt(e.target.value) || 1));
-            setEditForm({
-              ...editForm,
-              stats: { ...editForm.stats, [statKey]: val },
-            });
-          }}
-          className="w-12 bg-[#0d0805] border border-[#8B4513]/50 rounded px-2 py-1 text-center text-white text-sm"
-        />
-
-        {/* Botão rolar */}
+        {/* Roll button */}
         <button
           onClick={rollStat}
-          className="px-3 py-1 bg-[#8B4513] text-white rounded text-sm font-bold hover:bg-[#9B5523] transition-colors"
+          className="px-2 py-0.5 bg-[#8B4513]/60 text-white rounded text-xs font-bold hover:bg-[#8B4513]"
         >
-          ◆ Rolar
+          ◆
         </button>
 
-        {/* Modificador */}
-        <div className="flex items-center gap-1">
-          <span className="text-[#8B4513] text-xs">Mod:</span>
-          <input
-            type="number"
-            value={modifier}
-            onChange={(e) => {
-              setModifiers({ ...modifiers, [statKey]: parseInt(e.target.value) || 0 });
-            }}
-            className="w-12 bg-[#0d0805] border border-[#8B4513]/50 rounded px-2 py-1 text-center text-white text-sm"
-          />
-        </div>
+        {/* Modifier */}
+        <input
+          type="number"
+          value={modifier}
+          onChange={(e) => {
+            setModifiers({ ...modifiers, [statKey]: parseInt(e.target.value) || 0 });
+          }}
+          className="w-10 bg-[#0d0805] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs"
+          placeholder="mod"
+        />
 
-        {/* Resultado da rolagem */}
+        {/* Result */}
         {result && (
-          <div className="flex flex-col items-center min-w-[100px]">
-            <span className="text-[#8B4513] text-xs font-bold">
-              {result.rolls.join(", ")} {modifier !== 0 && (modifier > 0 ? `+ ${modifier}` : `- ${Math.abs(modifier)}`)}
+          <div className="flex-1 min-w-0 text-right">
+            <span className="text-[#FFD700] text-xs font-bold">
+              {result.total}
             </span>
-            <span className="text-[#8B4513] font-bold text-sm">
-              Resultado: {result.total}
+            <span className="text-[#8B4513]/60 text-xs ml-1">
+              ({result.rolls.join(",")}{modifier !== 0 && (modifier > 0 ? `+${modifier}` : modifier)})
             </span>
           </div>
         )}
@@ -336,279 +311,163 @@ export function CharacterGenerator() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="medieval-title text-4xl md:text-5xl text-white glow-red mb-3">
-          ⚔ Personagens
-        </h2>
-        <p className="text-[#D4A574]/50 italic font-serif text-lg">
-          Forje heróis para enfrentar o sertão
-        </p>
-      </div>
-
-      <div className="flex flex-wrap gap-4 justify-center">
-        <button
-          onClick={createNewCharacter}
-          className="gold-button px-6 py-3 rounded-xl font-bold"
-        >
-          + Novo Personagem
-        </button>
-        <button
-          onClick={generateRandomCharacter}
-          className="px-6 py-3 bg-[#8B4513]/80 text-[#FFD700] rounded-xl font-bold hover:bg-[#8B4513] border border-[#8B4513]/50 hover:border-[#FFD700]/30 transition-all font-serif"
-        >
-          ◆ Gerar Aleatório
-        </button>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-8">
-        <div className="md:col-span-1">
-          <div className="nordestino-card rounded-2xl p-6">
-              <h3 className="medieval-title text-xl text-[#FFD700]/80 mb-4">Personagens Salvos</h3>
-            {savedCharacters.length === 0 ? (
-              <p className="text-[#D4A574]/40 italic text-center py-8">Nenhum personagem criado ainda</p>
-            ) : (
-              <div className="space-y-3 max-h-[500px] overflow-y-auto scroll-parchment pr-2">
-                {savedCharacters.map((char) => (
-                  <div
-                    key={char.id}
-                    onClick={() => editCharacter(char)}
-                    className={`stat-box rounded-xl p-4 cursor-pointer transition-all ${
-                      selectedCharacter?.id === char.id ? "border-[#D4A574]" : "border-[#8B4513]/30"
-                    }`}
-                  >
-                    <div className="flex gap-3">
-                      {char.images && char.images.length > 0 && (
-                        <img
-                          src={char.images[0]}
-                          alt={char.name}
-                          className="w-12 h-12 rounded-lg object-cover border border-[#8B4513] cursor-zoom-in"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEnlargedImage(char.images[0]);
-                          }}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      )}
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-bold text-white">{char.name}</h4>
-                            <p className="text-[#8B4513] text-sm font-bold">{char.characterClass}</p>
-                          </div>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); deleteCharacter(char.id); }}
-                            className="text-[#D4A574] hover:text-[#CD853F]"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-4 mt-2 text-xs text-[#F5DEB3]/60">
-                      <span>HP: {char.hp}/{char.maxHp}</span>
-                      <span>DT: {char.mana}/{char.maxMana}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+    <div className="flex flex-col lg:flex-row gap-4">
+      {/* Main Content - Left Side */}
+      <div className="flex-1 flex flex-col gap-4">
+        {/* Header */}
+        <div className="flex flex-wrap gap-3 justify-center lg:justify-start items-center">
+          <button
+            onClick={createNewCharacter}
+            className="gold-button px-5 py-2 rounded-lg font-bold text-sm"
+          >
+            + Novo
+          </button>
+          <button
+            onClick={generateRandomCharacter}
+            className="px-4 py-2 bg-[#8B4513]/80 text-[#FFD700] rounded-lg font-bold hover:bg-[#8B4513] border border-[#8B4513]/50 hover:border-[#FFD700]/30 transition-all text-sm"
+          >
+            ◆ Aleatório
+          </button>
         </div>
 
-        <div className="md:col-span-2">
-          {isEditing ? (
-            <div className="nordestino-card rounded-2xl p-8">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="medieval-title text-2xl text-[#8B4513]">
-                  {selectedCharacter ? "Editando Personagem" : "Novo Personagem"}
-                </h3>
+        {/* Edit Form */}
+        {isEditing ? (
+          <div className="nordestino-card rounded-xl p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="medieval-title text-lg text-[#8B4513]">
+                {selectedCharacter ? "Editando" : "Novo Personagem"}
+              </h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setIsEditing(false); setSelectedCharacter(null); }}
+                  className="px-3 py-1 text-[#D4A574] hover:text-[#F5DEB3] text-sm"
+                >
+                  Cancelar
+                </button>
                 <button
                   onClick={saveCharacter}
-                  className="px-6 py-2 bg-[#8B4513] text-[#FFD700] rounded-lg font-bold hover:bg-[#9B5523] transition-colors"
+                  className="px-4 py-1 bg-[#8B4513] text-[#FFD700] rounded-lg font-bold hover:bg-[#9B5523] text-sm"
                 >
-                  ⊕ Salvar
+                  Salvar
                 </button>
               </div>
+            </div>
 
-              <div className="flex gap-4 mb-6">
-                <div className="flex-1">
-                  <label className="block text-[#8B4513] font-bold mb-2">Nome</label>
-                  <input
-                    type="text"
-                    value={editForm.name}
-                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    className="w-full input-medieval rounded-lg px-4 py-2"
-                    placeholder="Nome do personagem..."
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[#8B4513] font-bold mb-2">Classe</label>
-                  <select
-                    value={editForm.characterClass}
-                    onChange={(e) => setEditForm({ ...editForm, characterClass: e.target.value })}
-                    className="w-full input-medieval rounded-lg px-4 py-2 text-[#8B4513] font-bold"
-                  >
-                    {classes.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
+            <div className="grid sm:grid-cols-2 gap-3 mb-4">
               <div>
-                <label className="block text-[#8B4513] font-bold mb-2">Altura</label>
+                <label className="block text-[#8B4513] font-bold text-xs mb-1">Nome</label>
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full input-medieval rounded px-3 py-1.5 text-sm"
+                  placeholder="Nome..."
+                />
+              </div>
+              <div>
+                <label className="block text-[#8B4513] font-bold text-xs mb-1">Classe</label>
+                <select
+                  value={editForm.characterClass}
+                  onChange={(e) => setEditForm({ ...editForm, characterClass: e.target.value })}
+                  className="w-full input-medieval rounded px-3 py-1.5 text-sm text-[#8B4513] font-bold"
+                >
+                  {classes.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[#8B4513] font-bold text-xs mb-1">Altura</label>
                 <input
                   type="text"
                   value={editForm.height}
                   onChange={(e) => setEditForm({ ...editForm, height: e.target.value })}
-                  className="w-full input-medieval rounded-lg px-4 py-2"
-                  placeholder="Ex: 1,70m"
+                  className="w-full input-medieval rounded px-3 py-1.5 text-sm"
+                  placeholder="1,70m"
                 />
               </div>
               <div>
-                <label className="block text-[#8B4513] font-bold mb-2">Idade</label>
+                <label className="block text-[#8B4513] font-bold text-xs mb-1">Idade</label>
                 <input
                   type="text"
                   value={editForm.age}
                   onChange={(e) => setEditForm({ ...editForm, age: e.target.value })}
-                  className="w-full input-medieval rounded-lg px-4 py-2"
-                  placeholder="Ex: 25"
+                  className="w-full input-medieval rounded px-3 py-1.5 text-sm"
+                  placeholder="25"
                 />
               </div>
+            </div>
 
-              <div className="mb-6">
-                <label className="block text-[#8B4513] font-bold mb-2">Imagens do Personagem</label>
-                <div className="flex gap-2 mb-2">
+            {/* HP & DT bars */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <label className="block text-[#8B4513] font-bold text-xs mb-1">HP</label>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-4 bg-[#0d0805] rounded-full overflow-hidden border border-[#8B4513]/40">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#8B4513] to-[#CD853F] transition-all"
+                      style={{ width: `${(editForm.hp / editForm.maxHp) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-[#F5DEB3] w-16 text-center">
+                    {editForm.hp}/{editForm.maxHp}
+                  </span>
+                </div>
+                <div className="flex gap-1 mt-1">
                   <input
-                    type="text"
-                    id="imageUrlInput"
-                    className="flex-1 input-medieval rounded-lg px-4 py-2"
-                    placeholder="URL da imagem (ex: https://exemplo.com/imagem.jpg)"
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        const input = document.getElementById('imageUrlInput') as HTMLInputElement;
-                        if (input.value.trim()) {
-                          setEditForm({ ...editForm, images: [...editForm.images, input.value.trim()] });
-                          input.value = '';
-                        }
-                      }
-                    }}
+                    type="number"
+                    min="0"
+                    value={editForm.hp}
+                    onChange={(e) => setEditForm({ ...editForm, hp: Math.max(0, parseInt(e.target.value) || 0) })}
+                    className="w-12 bg-[#0d0805] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const input = document.getElementById('imageUrlInput') as HTMLInputElement;
-                      if (input.value.trim()) {
-                        setEditForm({ ...editForm, images: [...editForm.images, input.value.trim()] });
-                        input.value = '';
-                      }
-                    }}
-                    className="px-4 py-2 bg-[#8B4513] text-white rounded-lg font-bold hover:bg-[#9B5523]"
-                  >
-                    +
-                  </button>
-                </div>
-                <p className="text-[#F5DEB3]/50 text-xs mb-3">Pressione Enter ou clique em + para adicionar</p>
-                {editForm.images.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2 max-h-60 overflow-y-auto">
-                    {editForm.images.map((img, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={img}
-                          alt={`Imagem ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border-2 border-[#8B4513] cursor-zoom-in"
-                          onClick={() => setEnlargedImage(img)}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newImages = editForm.images.filter((_, i) => i !== index);
-                            setEditForm({ ...editForm, images: newImages });
-                          }}
-                          className="absolute -top-2 -right-2 bg-[#8B4513] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-[#8B4513] font-bold mb-2">Descrição</label>
-                <textarea
-                  value={editForm.description}
-                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                  className="w-full input-medieval rounded-lg px-4 py-2 resize-none"
-                  rows={3}
-                  placeholder="História e aparência do personagem..."
-                />
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-[#8B4513] font-bold mb-2">Pontos de Vida</label>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-6 bg-[#0d0805] rounded-full overflow-hidden border border-[#8B4513]/40">
-                      <div
-                        className="h-full bg-gradient-to-r from-[#8B4513] to-[#CD853F] transition-all"
-                        style={{ width: `${(editForm.hp / editForm.maxHp) * 100}%` }}
-                      />
-                    </div>
-                    <input
-                      type="number"
-                      min="1"
-                      value={editForm.hp}
-                      onChange={(e) => setEditForm({ ...editForm, hp: Math.max(0, parseInt(e.target.value) || 0) })}
-                      className="w-16 bg-[#0d0805] border border-[#8B4513]/40 rounded px-2 py-1 text-center text-white"
-                    />
-                    <span className="text-[#F5DEB3]">/</span>
-                    <input
-                      type="number"
-                      min="1"
-                      value={editForm.maxHp}
-                      onChange={(e) => setEditForm({ ...editForm, maxHp: Math.max(1, parseInt(e.target.value) || 1) })}
-                      className="w-16 bg-[#0d0805] border border-[#8B4513]/40 rounded px-2 py-1 text-center text-white"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-[#8B4513] font-bold mb-2">DT</label>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-6 bg-[#0d0805] rounded-full overflow-hidden border border-purple-600">
-                      <div
-                        className="h-full bg-gradient-to-r from-purple-700 to-purple-400 transition-all"
-                        style={{ width: `${(editForm.mana / editForm.maxMana) * 100}%` }}
-                      />
-                    </div>
-                    <input
-                      type="number"
-                      min="1"
-                      value={editForm.mana}
-                      onChange={(e) => setEditForm({ ...editForm, mana: Math.max(0, parseInt(e.target.value) || 0) })}
-                      className="w-16 bg-[#0d0805] border border-purple-900 rounded px-2 py-1 text-center text-white"
-                    />
-                    <span className="text-[#F5DEB3]">/</span>
-                    <input
-                      type="number"
-                      min="1"
-                      value={editForm.maxMana}
-                      onChange={(e) => setEditForm({ ...editForm, maxMana: Math.max(1, parseInt(e.target.value) || 1) })}
-                      className="w-16 bg-[#0d0805] border border-purple-900 rounded px-2 py-1 text-center text-white"
-                    />
-                  </div>
+                  <span className="text-[#8B4513]/50 text-xs self-center">/</span>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editForm.maxHp}
+                    onChange={(e) => setEditForm({ ...editForm, maxHp: Math.max(1, parseInt(e.target.value) || 1) })}
+                    className="w-12 bg-[#0d0805] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs"
+                  />
                 </div>
               </div>
+              <div>
+                <label className="block text-purple-400 font-bold text-xs mb-1">DT</label>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-4 bg-[#0d0805] rounded-full overflow-hidden border border-purple-600/40">
+                    <div
+                      className="h-full bg-gradient-to-r from-purple-700 to-purple-400 transition-all"
+                      style={{ width: `${(editForm.mana / editForm.maxMana) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-[#F5DEB3] w-16 text-center">
+                    {editForm.mana}/{editForm.maxMana}
+                  </span>
+                </div>
+                <div className="flex gap-1 mt-1">
+                  <input
+                    type="number"
+                    min="0"
+                    value={editForm.mana}
+                    onChange={(e) => setEditForm({ ...editForm, mana: Math.max(0, parseInt(e.target.value) || 0) })}
+                    className="w-12 bg-[#0d0805] border border-purple-900/40 rounded px-1 py-0.5 text-center text-white text-xs"
+                  />
+                  <span className="text-purple-400/50 text-xs self-center">/</span>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editForm.maxMana}
+                    onChange={(e) => setEditForm({ ...editForm, maxMana: Math.max(1, parseInt(e.target.value) || 1) })}
+                    className="w-12 bg-[#0d0805] border border-purple-900/40 rounded px-1 py-0.5 text-center text-white text-xs"
+                  />
+                </div>
+              </div>
+            </div>
 
-              <div className="space-y-3">
-                <h4 className="medieval-title text-lg text-[#8B4513]">✦ Atributos</h4>
+            {/* Stats */}
+            <div className="mb-4">
+              <h4 className="medieval-title text-sm text-[#8B4513] mb-2">✦ Atributos</h4>
+              <div className="grid grid-cols-2 gap-2">
                 <StatBar label="Força" color="bg-amber-800" statKey="strength" />
                 <StatBar label="Intelecto" color="bg-[#5C3317]" statKey="intellect" />
                 <StatBar label="Resistência" color="bg-amber-800" statKey="endurance" />
@@ -617,12 +476,147 @@ export function CharacterGenerator() {
                 <StatBar label="Mana" color="bg-[#5C3317]" statKey="manaStat" />
               </div>
             </div>
-          ) : (
-            <div className="nordestino-card rounded-2xl p-12 flex items-center justify-center min-h-[400px]">
-              <div className="text-center text-[#F5DEB3]/50">
-                <p className="text-6xl mb-4 text-[#8B4513]">⚔</p>
-                <p className="text-xl font-serif text-[#8B4513]">Selecione um personagem ou crie um novo</p>
+
+            {/* Description */}
+            <div className="mb-4">
+              <label className="block text-[#8B4513] font-bold text-xs mb-1">Descrição</label>
+              <textarea
+                value={editForm.description}
+                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                className="w-full input-medieval rounded px-3 py-1.5 resize-none text-sm"
+                rows={2}
+                placeholder="História do personagem..."
+              />
+            </div>
+
+            {/* Images */}
+            <div>
+              <label className="block text-[#8B4513] font-bold text-xs mb-1">Imagens</label>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  id="imageUrlInput"
+                  className="flex-1 input-medieval rounded px-3 py-1.5 text-xs"
+                  placeholder="Cole URL da imagem..."
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      const input = document.getElementById('imageUrlInput') as HTMLInputElement;
+                      if (input.value.trim()) {
+                        setEditForm({ ...editForm, images: [...editForm.images, input.value.trim()] });
+                        input.value = '';
+                      }
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const input = document.getElementById('imageUrlInput') as HTMLInputElement;
+                    if (input.value.trim()) {
+                      setEditForm({ ...editForm, images: [...editForm.images, input.value.trim()] });
+                      input.value = '';
+                    }
+                  }}
+                  className="px-3 py-1.5 bg-[#8B4513] text-white rounded font-bold text-sm hover:bg-[#9B5523]"
+                >
+                  +
+                </button>
               </div>
+              {editForm.images.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {editForm.images.map((img, index) => (
+                    <div key={index} className="relative flex-shrink-0">
+                      <img
+                        src={img}
+                        alt={`Img ${index + 1}`}
+                        className="w-16 h-16 object-cover rounded-lg border border-[#8B4513] cursor-pointer hover:border-[#FFD700]/50"
+                        onClick={() => setEnlargedImage(img)}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newImages = editForm.images.filter((_, i) => i !== index);
+                          setEditForm({ ...editForm, images: newImages });
+                        }}
+                        className="absolute -top-2 -right-2 bg-[#8B4513] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 hover:opacity-100 transition-opacity"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="nordestino-card rounded-xl p-8 flex-1 flex items-center justify-center">
+            <div className="text-center text-[#F5DEB3]/50">
+              <p className="mb-3 text-[#8B4513]"><SwordIcon size={48} /></p>
+              <p className="text-base font-serif text-[#8B4513]">Crie ou selecione um personagem</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Saved Characters - Right Side */}
+      <div className="lg:w-72 xl:w-80 flex-shrink-0">
+        <div className="nordestino-card rounded-xl p-3 lg:sticky lg:top-20">
+          <h3 className="medieval-title text-sm text-[#FFD700]/80 mb-3 flex items-center justify-between">
+            <span className="flex items-center gap-2"><DaggerIcon size={16} /> Personagens</span>
+            <span className="text-xs text-[#D4A574]/50">{savedCharacters.length}</span>
+          </h3>
+
+          {savedCharacters.length === 0 ? (
+            <p className="text-[#D4A574]/40 italic text-center py-6 text-sm">Nenhum personagem</p>
+          ) : (
+            <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-180px)] lg:max-h-none scroll-parchment">
+              {savedCharacters.map((char) => (
+                <div
+                  key={char.id}
+                  onClick={() => editCharacter(char)}
+                  className={`stat-box rounded-lg p-3 cursor-pointer transition-all ${
+                    selectedCharacter?.id === char.id ? "border-[#D4A574]" : "border-[#8B4513]/30"
+                  }`}
+                >
+                  <div className="flex gap-2">
+                    {char.images && char.images.length > 0 && (
+                      <img
+                        src={char.images[0]}
+                        alt={char.name}
+                        className="w-10 h-10 rounded object-cover border border-[#8B4513] flex-shrink-0 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEnlargedImage(char.images[0]);
+                        }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-white text-sm truncate">{char.name}</h4>
+                          <p className="text-[#8B4513] text-xs font-bold truncate">{char.characterClass}</p>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); deleteCharacter(char.id); }}
+                          className="text-[#D4A574] hover:text-[#CD853F] text-xs flex-shrink-0"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <div className="flex gap-3 mt-1 text-xs text-[#F5DEB3]/60">
+                        <span className="text-amber-600">HP {char.hp}/{char.maxHp}</span>
+                        <span className="text-purple-400">DT {char.mana}/{char.maxMana}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

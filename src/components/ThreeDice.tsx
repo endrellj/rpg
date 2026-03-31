@@ -42,6 +42,7 @@ export default function ThreeDice({ diceType, quantity, onRollComplete, onClose,
     if (!containerRef.current) return;
 
     containerRef.current.id = 'dice-canvas-container';
+    hasRolledRef.current = false;
 
     const diceBox = new DiceBox('#dice-canvas-container', {
       assetPath: '/assets/dice-box/',
@@ -87,7 +88,6 @@ export default function ThreeDice({ diceType, quantity, onRollComplete, onClose,
     diceBoxRef.current = diceBox;
 
     diceBox.init().then(() => {
-      hasRolledRef.current = false;
       const notation = `${quantity}${diceSideMap[diceType] || diceType}`;
       diceBox.roll(notation);
     });
@@ -96,7 +96,7 @@ export default function ThreeDice({ diceType, quantity, onRollComplete, onClose,
       diceBox.clear();
       diceBoxRef.current = null;
     };
-  }, [diceType, quantity]);
+  }, []);
 
   const handleClose = useCallback(() => {
     onClose();

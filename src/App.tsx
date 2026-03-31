@@ -3,13 +3,19 @@ import "./index.css";
 import { DiceRoller } from "./components/DiceRoller";
 import { CharacterGenerator } from "./components/CharacterGenerator";
 import { Notes } from "./components/Notes";
+import { DiceIcon, DaggerIcon, ScrollIcon } from "./components/Icons";
 
 type Tab = "dice" | "character" | "notes";
+
+const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  { id: "dice", label: "Dados", icon: <DiceIcon size={20} /> },
+  { id: "character", label: "Personagens", icon: <DaggerIcon size={20} /> },
+  { id: "notes", label: "Diário", icon: <ScrollIcon size={20} /> },
+];
 
 export function App() {
   const [activeTab, setActiveTab] = useState<Tab>("dice");
 
-  // Track mouse position for ambient glow effect
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
@@ -19,15 +25,8 @@ export function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  const tabs: { id: Tab; label: string; icon: string }[] = [
-    { id: "dice", label: "Dados", icon: "🎲" },
-    { id: "character", label: "Personagens", icon: "⚔" },
-    { id: "notes", label: "Diário", icon: "📖" },
-  ];
-
   return (
     <div className="min-h-screen relative" style={{ zIndex: 1 }}>
-      {/* Header + Navigation */}
       <header className="sticky top-0 z-50 border-b border-[#8B4513]/12" style={{
         background: 'linear-gradient(180deg, rgba(13, 8, 5, 0.97) 0%, rgba(13, 8, 5, 0.92) 100%)',
         backdropFilter: 'blur(16px)',
@@ -54,7 +53,7 @@ export function App() {
                       : "text-[#F5DEB3]/40 hover:text-[#F5DEB3]/70 hover:bg-white/[0.02]"
                     }`}
                 >
-                  <span className="text-lg md:text-xl">{tab.icon}</span>
+                  <span className="text-[#FFD700]">{tab.icon}</span>
                   <span className="medieval-title hidden md:inline">{tab.label}</span>
                 </button>
               ))}
@@ -63,7 +62,6 @@ export function App() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8 md:py-12">
         <div className="animate-fade-in-up" key={activeTab}>
           {activeTab === "dice" && <DiceRoller />}
@@ -72,7 +70,6 @@ export function App() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-[#8B4513]/10 py-8 mt-8">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
