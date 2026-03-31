@@ -27,65 +27,41 @@ export function App() {
 
   return (
     <div className="min-h-screen relative" style={{ zIndex: 1 }}>
-      {/* Header */}
-      <header className="relative overflow-hidden py-10 md:py-14">
-        {/* Background decorations */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '600px',
-            height: '600px',
-            background: 'radial-gradient(circle, rgba(139, 69, 19, 0.06) 0%, transparent 70%)',
-            borderRadius: '50%',
-          }} />
-        </div>
-
-        <div className="relative max-w-6xl mx-auto px-4">
-          <div className="text-center">
-            <h1 className="medieval-title text-5xl md:text-7xl text-white glow-red mb-3" style={{
-              lineHeight: 1.1,
-            }}>
-              Coração Maldito
-            </h1>
-            <p className="text-[#D4A574]/50 text-lg md:text-xl font-serif italic tracking-wide">
-              Lendas do sertão
-            </p>
-            <div className="flex justify-center gap-4 mt-5 items-center">
-              <div className="h-px w-16 md:w-24 bg-gradient-to-r from-transparent to-[#8B4513]/40" />
-              <span className="text-[#8B4513]/50 text-lg">♦</span>
-              <div className="h-px w-16 md:w-24 bg-gradient-to-l from-transparent to-[#8B4513]/40" />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-[#8B4513]/12" style={{
+      {/* Header + Navigation */}
+      <header className="sticky top-0 z-50 border-b border-[#8B4513]/12" style={{
         background: 'linear-gradient(180deg, rgba(13, 8, 5, 0.97) 0%, rgba(13, 8, 5, 0.92) 100%)',
         backdropFilter: 'blur(16px)',
       }}>
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex justify-center gap-1 md:gap-2 py-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`tab-button px-5 md:px-8 py-3 rounded-xl font-bold text-base md:text-lg flex items-center gap-2 md:gap-3
-                  ${activeTab === tab.id
-                    ? "text-[#FFD700] active"
-                    : "text-[#F5DEB3]/40 hover:text-[#F5DEB3]/70 hover:bg-white/[0.02]"
-                  }`}
-              >
-                <span className="text-xl md:text-2xl">{tab.icon}</span>
-                <span className="medieval-title hidden sm:inline">{tab.label}</span>
-              </button>
-            ))}
+        <div className="max-w-6xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <h1 className="medieval-title text-2xl md:text-3xl text-white glow-red">
+                Coração Maldito
+              </h1>
+              <span className="text-[#D4A574]/30 hidden sm:inline">•</span>
+              <p className="text-[#D4A574]/40 text-sm font-serif italic hidden sm:inline">
+                Lendas do sertão
+              </p>
+            </div>
+            <nav className="flex gap-1 md:gap-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`tab-button px-4 md:px-6 py-2 rounded-lg font-bold text-sm md:text-base flex items-center gap-2
+                    ${activeTab === tab.id
+                      ? "text-[#FFD700] active"
+                      : "text-[#F5DEB3]/40 hover:text-[#F5DEB3]/70 hover:bg-white/[0.02]"
+                    }`}
+                >
+                  <span className="text-lg md:text-xl">{tab.icon}</span>
+                  <span className="medieval-title hidden md:inline">{tab.label}</span>
+                </button>
+              ))}
+            </nav>
           </div>
         </div>
-      </nav>
+      </header>
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8 md:py-12">

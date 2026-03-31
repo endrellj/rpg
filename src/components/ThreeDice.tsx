@@ -1,11 +1,21 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import DiceBox from '@3d-dice/dice-box';
 
+interface DiceResult {
+  type: string;
+  rolls: number[];
+  total: number;
+  modifier: number;
+  timestamp: Date;
+}
+
 interface ThreeDiceProps {
   diceType: string;
   quantity: number;
   onRollComplete: (rolls: number[]) => void;
   onClose: () => void;
+  onRollAgain: () => void;
+  lastResult: DiceResult | null;
 }
 
 const diceSideMap: Record<string, string> = {
@@ -19,14 +29,13 @@ const diceSideMap: Record<string, string> = {
   d100: 'd%',
 };
 
-export default function ThreeDice({ diceType, quantity, onRollComplete, onClose }: ThreeDiceProps) {
+export default function ThreeDice({ diceType, quantity, onRollComplete, onClose, onRollAgain, lastResult }: ThreeDiceProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const diceBoxRef = useRef<DiceBox | null>(null);
   const [phase, setPhase] = useState<'rolling' | 'result'>('rolling');
   const [resultValues, setResultValues] = useState<number[]>([]);
   const onRollCompleteRef = useRef(onRollComplete);
   onRollCompleteRef.current = onRollComplete;
-  const resultTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasRolledRef = useRef(false);
 
   useEffect(() => {
@@ -71,41 +80,40 @@ export default function ThreeDice({ diceType, quantity, onRollComplete, onClose 
 
         setResultValues(rolls);
         setPhase('result');
-
-        resultTimeoutRef.current = setTimeout(() => {
-          onRollCompleteRef.current(rolls);
-        }, 1800);
+        onRollCompleteRef.current(rolls);
       },
     });
 
     diceBoxRef.current = diceBox;
 
     diceBox.init().then(() => {
+      hasRolledRef.current = false;
       const notation = `${quantity}${diceSideMap[diceType] || diceType}`;
       diceBox.roll(notation);
     });
 
     return () => {
-      if (resultTimeoutRef.current) {
-        clearTimeout(resultTimeoutRef.current);
-        resultTimeoutRef.current = null;
-      }
       diceBox.clear();
       diceBoxRef.current = null;
     };
   }, [diceType, quantity]);
 
   const handleClose = useCallback(() => {
-    if (resultTimeoutRef.current) {
-      clearTimeout(resultTimeoutRef.current);
-      resultTimeoutRef.current = null;
-    }
     onClose();
   }, [onClose]);
 
+  const handleRollAgain = useCallback(() => {
+    setPhase('rolling');
+    setResultValues([]);
+    hasRolledRef.current = false;
+    onRollAgain();
+  }, [onRollAgain]);
+
+  const modifier = lastResult?.modifier ?? 0;
+
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-stone-950/80 backdrop-blur-md p-4 transition-all duration-500">
-      <div className="relative w-full max-w-[850px] h-[80vh] max-h-[800px] rounded-3xl overflow-hidden shadow-[0_25px_60px_-10px_rgba(0,0,0,0.9),inset_0_0_80px_rgba(120,53,15,0.2)] bg-[#110A07] border-2 border-[#8B4513]/40">
+    <div className="fixed inset-0 z-[1000] flex items-start justify-center p-4 pt-[12vh]">
+      <div className="relative w-full max-w-[850px] h-[70vh] max-h-[700px] rounded-2xl overflow-hidden shadow-[0_25px_60px_-10px_rgba(0,0,0,0.9),inset_0_0_80px_rgba(120,53,15,0.2)] bg-[#110A07] border-2 border-[#8B4513]/40">
 
         <div ref={containerRef} className="absolute inset-0" style={{
           display: 'flex',
@@ -122,35 +130,55 @@ export default function ThreeDice({ diceType, quantity, onRollComplete, onClose 
           `}</style>
         </div>
 
-        <div className="absolute top-0 left-0 right-0 p-6 text-center pointer-events-none z-10 bg-gradient-to-b from-black/90 via-black/40 to-transparent">
-          <p className="font-['MedievalSharp'] text-3xl text-amber-500 m-0 drop-shadow-[0_2px_4px_rgba(0,0,0,1)] tracking-wide">
-            {phase === 'rolling' ? '🎲 Rolando...' : `✨ Resultado: ${resultValues.join(' + ')} = ${resultValues.reduce((a, b) => a + b, 0)}`}
-          </p>
-        </div>
-
         <button
           onClick={handleClose}
-          className="absolute top-5 right-5 z-20 w-12 h-12 rounded-full flex items-center justify-center bg-[#2C160B]/90 border-2 border-amber-700/50 text-amber-600 font-bold text-xl cursor-pointer hover:bg-amber-900 hover:text-amber-400 hover:scale-110 hover:border-amber-500 transition-all duration-300 shadow-lg"
+          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-[#2C160B]/90 border-2 border-amber-700/50 text-amber-600 font-bold text-lg cursor-pointer hover:bg-amber-900 hover:text-amber-400 hover:scale-110 hover:border-amber-500 transition-all duration-200 shadow-lg"
+          title="Fechar (Esc)"
         >
           ✕
         </button>
 
-        {phase === 'result' && (
-          <div
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 text-center"
-            style={{ animation: 'resultPopIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
-          >
-            <div className="bg-[#1a0f0a]/95 border-2 border-[#D4A574]/60 rounded-2xl py-6 px-12 backdrop-blur-md shadow-[0_0_50px_rgba(139,69,19,0.5),0_10px_30px_rgba(0,0,0,0.8)]">
-              <p className="font-['MedievalSharp'] text-[5rem] text-[#FFD700] m-0 leading-none drop-shadow-[0_0_30px_rgba(255,215,0,0.5)]">
-                {resultValues.reduce((a, b) => a + b, 0)}
-              </p>
-              {resultValues.length > 1 && (
-                <p className="font-['Cormorant_Garamond'] text-xl text-[#D4A574]/90 m-0 mt-3 font-bold tracking-wider">
-                  {resultValues.join(' + ')}
-                </p>
-              )}
-            </div>
+        {phase === 'rolling' && (
+          <div className="absolute top-0 left-0 right-0 p-4 text-center pointer-events-none z-10 bg-gradient-to-b from-black/90 via-black/40 to-transparent">
+            <p className="font-['MedievalSharp'] text-2xl text-amber-500 m-0 drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+              🎲 Rolando...
+            </p>
           </div>
+        )}
+
+        {phase === 'result' && (
+          <>
+            <div className="absolute top-0 left-0 right-0 p-4 text-center pointer-events-none z-10 bg-gradient-to-b from-black/90 via-black/40 to-transparent">
+              <p className="font-['MedievalSharp'] text-xl text-amber-400 m-0 drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+                ✨ Resultado
+              </p>
+            </div>
+
+            <div className="absolute bottom-24 left-0 right-0 z-20 flex flex-col items-center">
+              <div className="bg-[#1a0f0a]/95 border-2 border-[#D4A574]/60 rounded-2xl py-5 px-10 backdrop-blur-md shadow-[0_0_50px_rgba(139,69,19,0.5),0_10px_30px_rgba(0,0,0,0.8)]">
+                <p className="font-['MedievalSharp'] text-[4rem] text-[#FFD700] m-0 leading-none drop-shadow-[0_0_30px_rgba(255,215,0,0.5)]">
+                  {resultValues.reduce((a, b) => a + b, 0) + modifier}
+                </p>
+                {(resultValues.length > 1 || modifier !== 0) && (
+                  <p className="font-['Cormorant_Garamond'] text-lg text-[#D4A574]/90 m-0 mt-2 font-bold tracking-wider">
+                    {resultValues.join(' + ')}{modifier !== 0 && (modifier > 0 ? ` + ${modifier}` : ` − ${Math.abs(modifier)}`)}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <button
+              onClick={handleRollAgain}
+              className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 px-6 py-2 rounded-lg
+                bg-[#8B4513]/80 border-2 border-amber-700/50 text-amber-200 font-bold
+                hover:bg-amber-700 hover:text-amber-100 hover:scale-105 transition-all duration-200
+                shadow-lg flex items-center gap-2"
+            >
+              <span>🎲</span>
+              <span>RolarNovamente</span>
+              <span className="text-xs opacity-60">(R)</span>
+            </button>
+          </>
         )}
       </div>
     </div>
