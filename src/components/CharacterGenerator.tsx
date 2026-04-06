@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { DaggerIcon, SwordIcon, PlusIcon, XIcon, EditIcon } from "./Icons";
+import { DaggerIcon, SwordIcon, PlusIcon, XIcon, EditIcon, ShieldIcon, SparklesIcon } from "./Icons";
 
 interface Character {
   id: string;
@@ -232,6 +232,38 @@ export function CharacterGenerator() {
     setIsEditing(true);
   };
 
+  const adjustHp = (delta: number) => {
+    setEditForm({
+      ...editForm,
+      hp: Math.max(0, Math.min(editForm.maxHp, editForm.hp + delta)),
+    });
+  };
+
+  const adjustMaxHp = (delta: number) => {
+    const newMax = Math.max(1, editForm.maxHp + delta);
+    setEditForm({
+      ...editForm,
+      maxHp: newMax,
+      hp: Math.min(editForm.hp, newMax),
+    });
+  };
+
+  const adjustMana = (delta: number) => {
+    setEditForm({
+      ...editForm,
+      mana: Math.max(0, Math.min(editForm.maxMana, editForm.mana + delta)),
+    });
+  };
+
+  const adjustMaxMana = (delta: number) => {
+    const newMax = Math.max(1, editForm.maxMana + delta);
+    setEditForm({
+      ...editForm,
+      maxMana: newMax,
+      mana: Math.min(editForm.mana, newMax),
+    });
+  };
+
   const StatBar = ({ label, color, statKey }: { label: string; color: string; statKey: keyof typeof editForm.stats }) => {
     const points = editForm.stats[statKey];
     const result = rollResults[statKey];
@@ -256,49 +288,49 @@ export function CharacterGenerator() {
     };
 
     return (
-      <div className="flex items-center gap-2">
-        <span className="w-20 text-xs font-bold text-[#8B4513] truncate">{label}</span>
+      <div className="flex items-center gap-3 p-2 rounded-lg bg-[#0d0805]/50 border border-[#8B4513]/20 hover:border-[#8B4513]/40 transition-all">
+        <span className="w-20 text-xs font-bold text-[#D4A574] truncate">{label}</span>
         
-        {/* Point buttons */}
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => adjustPoints(-1)}
-            className="w-5 h-5 rounded bg-[#0d0805] border border-[#8B4513]/40 text-[#FFD700] text-xs hover:bg-[#8B4513]/30"
+            className="w-6 h-6 rounded bg-[#1a0f08] border border-[#8B4513]/40 text-[#FFD700] text-xs hover:bg-[#8B4513]/40 hover:border-[#FFD700]/50 transition-all flex items-center justify-center"
           >
             −
           </button>
-          <span className="w-6 text-center text-white text-sm font-bold">{points}</span>
+          <span className="w-8 text-center text-white text-sm font-bold">{points}</span>
           <button
             onClick={() => adjustPoints(1)}
-            className="w-5 h-5 rounded bg-[#0d0805] border border-[#8B4513]/40 text-[#FFD700] text-xs hover:bg-[#8B4513]/30"
+            className="w-6 h-6 rounded bg-[#1a0f08] border border-[#8B4513]/40 text-[#FFD700] text-xs hover:bg-[#8B4513]/40 hover:border-[#FFD700]/50 transition-all flex items-center justify-center"
           >
             +
           </button>
         </div>
 
-        {/* Roll button */}
         <button
           onClick={rollStat}
-          className="px-2 py-0.5 bg-[#8B4513]/60 text-white rounded text-xs font-bold hover:bg-[#8B4513]"
+          className="w-7 h-7 rounded bg-gradient-to-br from-[#8B4513] to-[#5C3317] text-white text-xs font-bold hover:from-[#9B5523] hover:to-[#6C4317] transition-all flex items-center justify-center shadow-lg shadow-[#8B4513]/20"
+          title="Rolar dado"
         >
-          ◆
+          <SparklesIcon size={12} />
         </button>
 
-        {/* Modifier */}
-        <input
-          type="number"
-          value={modifier}
-          onChange={(e) => {
-            setModifiers({ ...modifiers, [statKey]: parseInt(e.target.value) || 0 });
-          }}
-          className="w-10 bg-[#0d0805] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs"
-          placeholder="mod"
-        />
+        <div className="flex items-center gap-1">
+          <span className="text-[#8B4513]/50 text-xs">±</span>
+          <input
+            type="number"
+            value={modifier}
+            onChange={(e) => {
+              setModifiers({ ...modifiers, [statKey]: parseInt(e.target.value) || 0 });
+            }}
+            className="w-10 bg-[#1a0f08] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs focus:border-[#FFD700]/50 focus:outline-none transition-colors"
+            placeholder="0"
+          />
+        </div>
 
-        {/* Result */}
         {result && (
           <div className="flex-1 min-w-0 text-right">
-            <span className="text-[#FFD700] text-xs font-bold">
+            <span className="text-[#FFD700] text-sm font-bold">
               {result.total}
             </span>
             <span className="text-[#8B4513]/60 text-xs ml-1">
@@ -310,172 +342,227 @@ export function CharacterGenerator() {
     );
   };
 
+  const ResourceBar = ({ 
+    label, 
+    current, 
+    max, 
+    color, 
+    gradient, 
+    onAdjustCurrent, 
+    onAdjustMax,
+    icon
+  }: { 
+    label: string; 
+    current: number; 
+    max: number; 
+    color: string; 
+    gradient: string;
+    onAdjustCurrent: (delta: number) => void;
+    onAdjustMax: (delta: number) => void;
+    icon: React.ReactNode;
+  }) => {
+    const percentage = Math.min(100, Math.max(0, (current / max) * 100));
+    
+    return (
+      <div className="p-3 rounded-xl bg-[#0d0805]/60 border border-[#8B4513]/20">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className={`${color}`}>{icon}</span>
+            <span className={`text-xs font-bold uppercase tracking-wider ${color}`}>{label}</span>
+          </div>
+          <span className="text-xs text-[#D4A574]/70 font-mono">{current}/{max}</span>
+        </div>
+        
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex-1 h-3 bg-[#0a0505] rounded-full overflow-hidden border border-[#8B4513]/30">
+            <div
+              className={`h-full ${gradient} transition-all duration-500 ease-out`}
+              style={{ width: `${percentage}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center justify-between bg-[#0a0505] rounded-lg px-2 py-1.5 border border-[#8B4513]/20">
+            <span className="text-xs text-[#8B4513]/70">Atual</span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => onAdjustCurrent(-1)}
+                className="w-5 h-5 rounded bg-[#1a0f08] text-[#FFD700] text-xs hover:bg-[#8B4513]/40 transition-all flex items-center justify-center"
+              >
+                −
+              </button>
+              <span className="w-8 text-center text-white text-sm font-bold">{current}</span>
+              <button
+                onClick={() => onAdjustCurrent(1)}
+                className="w-5 h-5 rounded bg-[#1a0f08] text-[#FFD700] text-xs hover:bg-[#8B4513]/40 transition-all flex items-center justify-center"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center justify-between bg-[#0a0505] rounded-lg px-2 py-1.5 border border-[#8B4513]/20">
+            <span className="text-xs text-[#8B4513]/70">Máx</span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => onAdjustMax(-1)}
+                className="w-5 h-5 rounded bg-[#1a0f08] text-[#FFD700] text-xs hover:bg-[#8B4513]/40 transition-all flex items-center justify-center"
+              >
+                −
+              </button>
+              <span className="w-8 text-center text-white text-sm font-bold">{max}</span>
+              <button
+                onClick={() => onAdjustMax(1)}
+                className="w-5 h-5 rounded bg-[#1a0f08] text-[#FFD700] text-xs hover:bg-[#8B4513]/40 transition-all flex items-center justify-center"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="flex flex-col lg:flex-row gap-4">
+    <div className="flex flex-col lg:flex-row gap-6">
       {/* Main Content - Left Side */}
       <div className="flex-1 flex flex-col gap-4">
         {/* Header */}
-        <div className="flex flex-wrap gap-3 justify-center lg:justify-start items-center">
+        <div className="text-center lg:text-left mb-2">
+          <h2 className="medieval-title text-3xl text-white glow-red mb-1">
+            ◆Galeria de Heróis
+          </h2>
+          <p className="text-[#F5DEB3]/60 italic font-serif text-sm">
+            Crie lendas que ecoarão pelo sertão
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
           <button
             onClick={createNewCharacter}
-            className="gold-button px-5 py-2 rounded-lg font-bold text-sm flex items-center gap-2"
+            className="gold-button px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-[#8B4513]/20"
           >
-            <PlusIcon size={16} />
-            <span>Novo</span>
+            <PlusIcon size={18} />
+            <span>Novo Personagem</span>
           </button>
           <button
             onClick={generateRandomCharacter}
-            className="px-4 py-2 bg-[#8B4513]/80 text-[#FFD700] rounded-lg font-bold hover:bg-[#8B4513] border border-[#8B4513]/50 hover:border-[#FFD700]/30 transition-all text-sm flex items-center gap-2"
+            className="px-5 py-2.5 bg-gradient-to-r from-[#5C3317] to-[#8B4513] text-[#FFD700] rounded-lg font-bold border border-[#8B4513]/50 hover:border-[#FFD700]/40 hover:from-[#6C4317] hover:to-[#9B5523] transition-all text-sm flex items-center gap-2 shadow-lg"
           >
-            <SwordIcon size={16} />
-            <span>Aleatório</span>
+            <SparklesIcon size={16} />
+            <span>Gerar Aleatório</span>
           </button>
         </div>
 
         {/* Edit Form */}
         {isEditing ? (
-          <div className="nordestino-card rounded-xl p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="medieval-title text-lg text-[#8B4513] flex items-center gap-2">
-                <EditIcon size={18} />
-                <span>{selectedCharacter ? "Editando" : "Novo"}</span>
-              </h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => { setIsEditing(false); setSelectedCharacter(null); }}
-                  className="px-3 py-1 text-[#D4A574] hover:text-[#F5DEB3] text-sm"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={saveCharacter}
-                  className="px-4 py-1 bg-[#8B4513] text-[#FFD700] rounded-lg font-bold hover:bg-[#9B5523] text-sm flex items-center gap-1"
-                >
-                  <PlusIcon size={14} />
-                  <span>Salvar</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-3 mb-4">
-              <div>
-                <label className="block text-[#8B4513] font-bold text-xs mb-1">Nome</label>
-                <input
-                  type="text"
-                  value={editForm.name}
-                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  className="w-full input-medieval rounded px-3 py-1.5 text-sm"
-                  placeholder="Nome..."
-                />
-              </div>
-              <div>
-                <label className="block text-[#8B4513] font-bold text-xs mb-1">Classe</label>
-                <select
-                  value={editForm.characterClass}
-                  onChange={(e) => setEditForm({ ...editForm, characterClass: e.target.value })}
-                  className="w-full input-medieval rounded px-3 py-1.5 text-sm text-[#8B4513] font-bold"
-                >
-                  {classes.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[#8B4513] font-bold text-xs mb-1">Altura</label>
-                <input
-                  type="text"
-                  value={editForm.height}
-                  onChange={(e) => setEditForm({ ...editForm, height: e.target.value })}
-                  className="w-full input-medieval rounded px-3 py-1.5 text-sm"
-                  placeholder="1,70m"
-                />
-              </div>
-              <div>
-                <label className="block text-[#8B4513] font-bold text-xs mb-1">Idade</label>
-                <input
-                  type="text"
-                  value={editForm.age}
-                  onChange={(e) => setEditForm({ ...editForm, age: e.target.value })}
-                  className="w-full input-medieval rounded px-3 py-1.5 text-sm"
-                  placeholder="25"
-                />
-              </div>
-            </div>
-
-            {/* HP & DT bars */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div>
-                <label className="block text-[#8B4513] font-bold text-xs mb-1">HP</label>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-4 bg-[#0d0805] rounded-full overflow-hidden border border-[#8B4513]/40">
-                    <div
-                      className="h-full bg-gradient-to-r from-[#8B4513] to-[#CD853F] transition-all"
-                      style={{ width: `${(editForm.hp / editForm.maxHp) * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-[#F5DEB3] w-16 text-center">
-                    {editForm.hp}/{editForm.maxHp}
-                  </span>
+          <div className="nordestino-card rounded-xl overflow-hidden">
+            {/* Form Header */}
+            <div className="bg-gradient-to-r from-[#1a0f08] to-[#0d0805] px-6 py-4 border-b border-[#8B4513]/30">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8B4513] to-[#5C3317] flex items-center justify-center shadow-lg shadow-[#8B4513]/30">
+                  <EditIcon size={20} className="text-[#FFD700]" />
                 </div>
-                <div className="flex gap-1 mt-1">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={editForm.hp}
-                    onChange={(e) => setEditForm({ ...editForm, hp: Math.max(0, parseInt(e.target.value) || 0) })}
-                    className="w-12 bg-[#0d0805] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs focus:border-[#8B4513] focus:outline-none"
-                  />
-                  <span className="text-[#8B4513]/50 text-xs self-center">/</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={editForm.maxHp}
-                    onChange={(e) => setEditForm({ ...editForm, maxHp: Math.max(1, parseInt(e.target.value) || 1) })}
-                    className="w-12 bg-[#0d0805] border border-[#8B4513]/40 rounded px-1 py-0.5 text-center text-white text-xs focus:border-[#8B4513] focus:outline-none"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-purple-400 font-bold text-xs mb-1">DT</label>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-4 bg-[#0d0805] rounded-full overflow-hidden border border-purple-600/40">
-                    <div
-                      className="h-full bg-gradient-to-r from-purple-700 to-purple-400 transition-all"
-                      style={{ width: `${(editForm.mana / editForm.maxMana) * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-[#F5DEB3] w-16 text-center">
-                    {editForm.mana}/{editForm.maxMana}
-                  </span>
-                </div>
-                <div className="flex gap-1 mt-1">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={editForm.mana}
-                    onChange={(e) => setEditForm({ ...editForm, mana: Math.max(0, parseInt(e.target.value) || 0) })}
-                    className="w-12 bg-[#0d0805] border border-purple-900/40 rounded px-1 py-0.5 text-center text-white text-xs focus:border-purple-600 focus:outline-none"
-                  />
-                  <span className="text-purple-400/50 text-xs self-center">/</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={editForm.maxMana}
-                    onChange={(e) => setEditForm({ ...editForm, maxMana: Math.max(1, parseInt(e.target.value) || 1) })}
-                    className="w-12 bg-[#0d0805] border border-purple-900/40 rounded px-1 py-0.5 text-center text-white text-xs focus:border-purple-600 focus:outline-none"
-                  />
+                <div>
+                  <h3 className="medieval-title text-xl text-[#FFD700]">
+                    {selectedCharacter ? "Editar Herói" : "Novo Herói"}
+                  </h3>
+                  <p className="text-[#8B4513] text-xs">
+                    {selectedCharacter ? "Modifique os atributos do personagem" : "Crie uma nova lenda para o sertão"}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="mb-4">
-              <h4 className="medieval-title text-sm text-[#8B4513] mb-2">✦ Atributos</h4>
-              <div className="grid grid-cols-2 gap-2">
+            <div className="p-6 space-y-6">
+              {/* Basic Info Grid */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="block text-[#D4A574] font-bold text-xs uppercase tracking-wider">Nome do Herói</label>
+                  <input
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className="w-full input-medieval rounded-lg px-4 py-2.5 text-sm"
+                    placeholder="Digite o nome..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-[#D4A574] font-bold text-xs uppercase tracking-wider">Classe</label>
+                  <select
+                    value={editForm.characterClass}
+                    onChange={(e) => setEditForm({ ...editForm, characterClass: e.target.value })}
+                    className="w-full input-medieval rounded-lg px-4 py-2.5 text-sm text-[#FFD700] font-bold"
+                  >
+                    {classes.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-[#D4A574] font-bold text-xs uppercase tracking-wider">Altura</label>
+                  <input
+                    type="text"
+                    value={editForm.height}
+                    onChange={(e) => setEditForm({ ...editForm, height: e.target.value })}
+                    className="w-full input-medieval rounded-lg px-4 py-2.5 text-sm"
+                    placeholder="1,70m"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-[#D4A574] font-bold text-xs uppercase tracking-wider">Idade</label>
+                  <input
+                    type="text"
+                    value={editForm.age}
+                    onChange={(e) => setEditForm({ ...editForm, age: e.target.value })}
+                    className="w-full input-medieval rounded-lg px-4 py-2.5 text-sm"
+                    placeholder="25"
+                  />
+                </div>
+              </div>
+
+              {/* Decorative Divider */}
+              <div className="flex items-center gap-4">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#8B4513]/40 to-transparent"></div>
+                <span className="text-[#8B4513]/60 text-xs uppercase tracking-widest">Vitalidade</span>
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#8B4513]/40 to-transparent"></div>
+              </div>
+
+              {/* HP & DT */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                <ResourceBar
+                  label="HP"
+                  current={editForm.hp}
+                  max={editForm.maxHp}
+                  color="text-amber-500"
+                  gradient="bg-gradient-to-r from-amber-700 to-amber-400"
+                  onAdjustCurrent={adjustHp}
+                  onAdjustMax={adjustMaxHp}
+                  icon={<ShieldIcon size={16} />}
+                />
+                <ResourceBar
+                  label="DT"
+                  current={editForm.mana}
+                  max={editForm.maxMana}
+                  color="text-purple-400"
+                  gradient="bg-gradient-to-r from-purple-700 to-purple-400"
+                  onAdjustCurrent={adjustMana}
+                  onAdjustMax={adjustMaxMana}
+                  icon={<SparklesIcon size={16} />}
+                />
+              </div>
+
+              {/* Decorative Divider */}
+              <div className="flex items-center gap-4">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#8B4513]/40 to-transparent"></div>
+                <span className="text-[#8B4513]/60 text-xs uppercase tracking-widest">Atributos</span>
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#8B4513]/40 to-transparent"></div>
+              </div>
+
+              {/* Stats */}
+              <div className="grid sm:grid-cols-2 gap-3">
                 <StatBar label="Força" color="bg-amber-800" statKey="strength" />
                 <StatBar label="Intelecto" color="bg-[#5C3317]" statKey="intellect" />
                 <StatBar label="Resistência" color="bg-amber-800" statKey="endurance" />
@@ -483,87 +570,122 @@ export function CharacterGenerator() {
                 <StatBar label="Sanidade" color="bg-amber-800" statKey="sanity" />
                 <StatBar label="Mana" color="bg-[#5C3317]" statKey="manaStat" />
               </div>
-            </div>
 
-            {/* Description */}
-            <div className="mb-4">
-              <label className="block text-[#8B4513] font-bold text-xs mb-1">Descrição</label>
-              <textarea
-                value={editForm.description}
-                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                className="w-full input-medieval rounded px-3 py-1.5 resize-none text-sm"
-                rows={2}
-                placeholder="História do personagem..."
-              />
-            </div>
+              {/* Decorative Divider */}
+              <div className="flex items-center gap-4">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#8B4513]/40 to-transparent"></div>
+                <span className="text-[#8B4513]/60 text-xs uppercase tracking-widest">História</span>
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#8B4513]/40 to-transparent"></div>
+              </div>
 
-            {/* Images */}
-            <div>
-              <label className="block text-[#8B4513] font-bold text-xs mb-1">Imagens</label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  id="imageUrlInput"
-                  className="flex-1 input-medieval rounded px-3 py-1.5 text-xs"
-                  placeholder="Cole URL da imagem..."
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
+              {/* Description */}
+              <div className="space-y-2">
+                <label className="block text-[#D4A574] font-bold text-xs uppercase tracking-wider">Descrição</label>
+                <textarea
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  className="w-full input-medieval rounded-lg px-4 py-3 resize-none text-sm"
+                  rows={3}
+                  placeholder="Conte a história deste herói, suas origens, motivações e lendas que o cercam..."
+                />
+              </div>
+
+              {/* Images */}
+              <div className="space-y-2">
+                <label className="block text-[#D4A574] font-bold text-xs uppercase tracking-wider">Imagens</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    id="imageUrlInput"
+                    className="flex-1 input-medieval rounded-lg px-4 py-2.5 text-sm"
+                    placeholder="Cole a URL da imagem..."
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        const input = document.getElementById('imageUrlInput') as HTMLInputElement;
+                        if (input.value.trim()) {
+                          setEditForm({ ...editForm, images: [...editForm.images, input.value.trim()] });
+                          input.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
                       const input = document.getElementById('imageUrlInput') as HTMLInputElement;
                       if (input.value.trim()) {
                         setEditForm({ ...editForm, images: [...editForm.images, input.value.trim()] });
                         input.value = '';
                       }
-                    }
-                  }}
-                />
+                    }}
+                    className="px-4 py-2.5 bg-gradient-to-br from-[#8B4513] to-[#5C3317] text-white rounded-lg font-bold text-sm hover:from-[#9B5523] hover:to-[#6C4317] transition-all flex items-center gap-2 shadow-lg"
+                  >
+                    <PlusIcon size={16} />
+                    <span className="hidden sm:inline">Adicionar</span>
+                  </button>
+                </div>
+                {editForm.images.length > 0 && (
+                  <div className="flex gap-3 overflow-x-auto pb-2 pt-2">
+                    {editForm.images.map((img, index) => (
+                      <div key={index} className="relative flex-shrink-0 group">
+                        <img
+                          src={img}
+                          alt={`Img ${index + 1}`}
+                          className="w-20 h-20 object-cover rounded-lg border-2 border-[#8B4513] cursor-pointer hover:border-[#FFD700] transition-all shadow-lg"
+                          onClick={() => setEnlargedImage(img)}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newImages = editForm.images.filter((_, i) => i !== index);
+                            setEditForm({ ...editForm, images: newImages });
+                          }}
+                          className="absolute -top-2 -right-2 bg-[#8B4513] text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-all shadow-lg opacity-0 group-hover:opacity-100"
+                        >
+                          <XIcon size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons at Bottom */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-[#8B4513]/20">
                 <button
-                  type="button"
-                  onClick={() => {
-                    const input = document.getElementById('imageUrlInput') as HTMLInputElement;
-                    if (input.value.trim()) {
-                      setEditForm({ ...editForm, images: [...editForm.images, input.value.trim()] });
-                      input.value = '';
-                    }
-                  }}
-                  className="px-3 py-1.5 bg-[#8B4513] text-white rounded font-bold text-sm hover:bg-[#9B5523]"
+                  onClick={() => { setIsEditing(false); setSelectedCharacter(null); }}
+                  className="flex-1 px-6 py-3 bg-[#1a0f08] text-[#D4A574] rounded-lg font-bold hover:bg-[#2a1f18] hover:text-[#F5DEB3] transition-all text-sm border border-[#8B4513]/30"
                 >
-                  +
+                  Cancelar
+                </button>
+                <button
+                  onClick={saveCharacter}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-[#8B4513] to-[#9B5523] text-[#FFD700] rounded-lg font-bold hover:from-[#9B5523] hover:to-[#AB6533] transition-all text-sm flex items-center justify-center gap-2 shadow-lg shadow-[#8B4513]/30"
+                >
+                  <PlusIcon size={18} />
+                  <span>{selectedCharacter ? "Salvar Alterações" : "Criar Personagem"}</span>
                 </button>
               </div>
-              {editForm.images.length > 0 && (
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                  {editForm.images.map((img, index) => (
-                    <div key={index} className="relative flex-shrink-0">
-                      <img
-                        src={img}
-                        alt={`Img ${index + 1}`}
-                        className="w-16 h-16 object-cover rounded-lg border border-[#8B4513] cursor-pointer hover:border-[#FFD700]/50"
-                        onClick={() => setEnlargedImage(img)}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newImages = editForm.images.filter((_, i) => i !== index);
-                          setEditForm({ ...editForm, images: newImages });
-                        }}
-                        className="absolute -top-2 -right-2 bg-[#8B4513] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 hover:opacity-100 transition-opacity"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         ) : (
-          <div className="nordestino-card rounded-xl p-8 flex-1 flex items-center justify-center">
-            <div className="text-center text-[#F5DEB3]/50">
-              <p className="mb-3 text-[#8B4513]"><SwordIcon size={48} /></p>
-              <p className="text-base font-serif text-[#8B4513]">Crie ou selecione um personagem</p>
+          <div className="nordestino-card rounded-xl p-12 flex-1 flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#0d0805] border-2 border-[#8B4513]/40 flex items-center justify-center">
+                <SwordIcon size={40} className="text-[#8B4513]/60" />
+              </div>
+              <h3 className="medieval-title text-2xl text-[#8B4513] mb-2">Nenhum Herói Selecionado</h3>
+              <p className="text-[#D4A574]/60 font-serif italic mb-6">Crie um novo personagem ou selecione um existente</p>
+              <button
+                onClick={createNewCharacter}
+                className="gold-button px-8 py-3 rounded-lg font-bold text-base inline-flex items-center gap-2"
+              >
+                <PlusIcon size={20} />
+                <span>Criar Novo Herói</span>
+              </button>
             </div>
           </div>
         )}
@@ -571,30 +693,42 @@ export function CharacterGenerator() {
 
       {/* Saved Characters - Right Side */}
       <div className="lg:w-72 xl:w-80 flex-shrink-0">
-        <div className="nordestino-card rounded-xl p-3 lg:sticky lg:top-20">
-          <h3 className="medieval-title text-sm text-[#FFD700]/80 mb-3 flex items-center justify-between">
-            <span className="flex items-center gap-2"><DaggerIcon size={16} /> Personagens</span>
-            <span className="text-xs text-[#D4A574]/50">{savedCharacters.length}</span>
-          </h3>
+        <div className="glass-card rounded-xl p-4 lg:sticky lg:top-20">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#8B4513]/20">
+            <h3 className="medieval-title text-lg text-[#FFD700] flex items-center gap-2">
+              <DaggerIcon size={18} />
+              <span>Personagens</span>
+            </h3>
+            <span className="text-xs bg-[#8B4513]/30 text-[#FFD700] px-2 py-1 rounded-full font-bold">
+              {savedCharacters.length}
+            </span>
+          </div>
 
           {savedCharacters.length === 0 ? (
-            <p className="text-[#D4A574]/40 italic text-center py-6 text-sm">Nenhum personagem</p>
+            <div className="text-center py-8">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#0d0805] border border-[#8B4513]/30 flex items-center justify-center">
+                <ShieldIcon size={28} className="text-[#8B4513]/40" />
+              </div>
+              <p className="text-[#D4A574]/40 italic text-sm">Nenhum personagem criado</p>
+            </div>
           ) : (
-            <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-180px)] lg:max-h-none scroll-parchment">
+            <div className="space-y-3 overflow-y-auto max-h-[calc(100vh-200px)] lg:max-h-none scroll-parchment">
               {savedCharacters.map((char) => (
                 <div
                   key={char.id}
                   onClick={() => editCharacter(char)}
-                  className={`stat-box rounded-lg p-3 cursor-pointer transition-all ${
-                    selectedCharacter?.id === char.id ? "border-[#D4A574]" : "border-[#8B4513]/30"
+                  className={`group relative p-3 rounded-xl cursor-pointer transition-all duration-300 border ${
+                    selectedCharacter?.id === char.id 
+                      ? "bg-[#8B4513]/20 border-[#FFD700]/50 shadow-lg shadow-[#8B4513]/20" 
+                      : "bg-[#0d0805]/40 border-[#8B4513]/20 hover:border-[#8B4513]/40 hover:bg-[#0d0805]/60"
                   }`}
                 >
-                  <div className="flex gap-2">
-                    {char.images && char.images.length > 0 && (
+                  <div className="flex gap-3">
+                    {char.images && char.images.length > 0 ? (
                       <img
                         src={char.images[0]}
                         alt={char.name}
-                        className="w-10 h-10 rounded object-cover border border-[#8B4513] flex-shrink-0 cursor-pointer"
+                        className="w-12 h-12 rounded-lg object-cover border-2 border-[#8B4513] flex-shrink-0 cursor-pointer transition-transform group-hover:scale-105"
                         onClick={(e) => {
                           e.stopPropagation();
                           setEnlargedImage(char.images[0]);
@@ -603,26 +737,40 @@ export function CharacterGenerator() {
                           (e.target as HTMLImageElement).style.display = 'none';
                         }}
                       />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-[#1a0f08] border-2 border-[#8B4513]/40 flex items-center justify-center flex-shrink-0">
+                        <SwordIcon size={20} className="text-[#8B4513]/60" />
+                      </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start">
+                      <div className="flex justify-between items-start gap-2">
                         <div className="min-w-0">
-                          <h4 className="font-bold text-white text-sm truncate">{char.name}</h4>
+                          <h4 className="font-bold text-white text-sm truncate group-hover:text-[#FFD700] transition-colors">{char.name}</h4>
                           <p className="text-[#8B4513] text-xs font-bold truncate">{char.characterClass}</p>
                         </div>
                         <button
                           onClick={(e) => { e.stopPropagation(); deleteCharacter(char.id); }}
-                          className="text-[#D4A574] hover:text-[#CD853F] text-xs flex-shrink-0"
+                          className="text-[#8B4513]/60 hover:text-red-400 text-xs flex-shrink-0 p-1 hover:bg-red-500/10 rounded transition-all"
+                          title="Excluir"
                         >
-                          ✕
+                          <XIcon size={14} />
                         </button>
                       </div>
-                      <div className="flex gap-3 mt-1 text-xs text-[#F5DEB3]/60">
-                        <span className="text-amber-600">HP {char.hp}/{char.maxHp}</span>
-                        <span className="text-purple-400">DT {char.mana}/{char.maxMana}</span>
+                      <div className="flex gap-4 mt-2 text-xs">
+                        <span className="text-amber-500 flex items-center gap-1">
+                          <ShieldIcon size={12} />
+                          {char.hp}/{char.maxHp}
+                        </span>
+                        <span className="text-purple-400 flex items-center gap-1">
+                          <SparklesIcon size={12} />
+                          {char.mana}/{char.maxMana}
+                        </span>
                       </div>
                     </div>
                   </div>
+                  {selectedCharacter?.id === char.id && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#FFD700] to-[#8B4513] rounded-r-full"></div>
+                  )}
                 </div>
               ))}
             </div>
@@ -633,22 +781,22 @@ export function CharacterGenerator() {
       {/* Modal de imagem ampliada */}
       {enlargedImage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black"
+          className="fixed inset-0 z-50 flex items-center justify-center"
           style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)' }}
           onClick={() => setEnlargedImage(null)}
         >
-          <div className="relative max-w-[95vw] max-h-[95vh]">
+          <div className="relative max-w-[95vw] max-h-[95vh] p-2">
             <img
               src={enlargedImage}
               alt="Imagem ampliada"
-              className="max-w-full max-h-[95vh] rounded-lg border-4 border-[#8B4513] shadow-2xl"
+              className="max-w-full max-h-[90vh] rounded-xl border-4 border-[#8B4513] shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
             <button
               onClick={() => setEnlargedImage(null)}
-              className="absolute -top-4 -right-4 bg-[#8B4513] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold hover:bg-amber-800 transition-colors"
+              className="absolute -top-3 -right-3 bg-gradient-to-br from-[#8B4513] to-[#5C3317] text-white rounded-full w-10 h-10 flex items-center justify-center hover:from-red-600 hover:to-red-800 transition-all shadow-lg"
             >
-              ✕
+              <XIcon size={20} />
             </button>
           </div>
         </div>
